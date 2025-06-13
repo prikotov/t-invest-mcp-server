@@ -37,3 +37,8 @@
 - `config/` — конфигурация Symfony.
 - `tests/` — тесты.
 - `var/` — временные файлы и логи (создаётся во время работы приложения).
+
+## T-Invest API
+
+- Для реализации Tools используйте схему OpenAPI, доступную по адресу:
+  https://russianinvestments.github.io/investAPI/swagger-ui/openapi.yaml
