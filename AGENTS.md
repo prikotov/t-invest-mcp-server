@@ -29,6 +29,22 @@
 
 - [ ] Добавить результат выполнения команды `./bin/phpunit`
 
+  Пример вывода:
+
+  ```
+  $ ./bin/phpunit
+  PHPUnit 12.2.1 by Sebastian Bergmann and contributors.
+
+  Runtime:       PHP 8.4.8
+  Configuration: /workspace/t-invest-mcp-server/phpunit.dist.xml
+
+  ...                                                                 3 / 3 (100%)
+
+  Time: 00:00.175, Memory: 16.00 MB
+
+  OK (3 tests, 4 assertions)
+  ```
+
 ## Структура проекта
 
 - `src/` — исходный код приложения.
