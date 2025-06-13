@@ -62,7 +62,6 @@ readonly class GetPortfolioTool implements ToolInterface
             );
         }
 
-        // todo маппинг структуры в понятную схему
         $obj = $this->getPortfolioMapper->map($result);
 
         return new CallToolResult(
