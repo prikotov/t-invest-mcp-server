@@ -6,6 +6,7 @@ use App\Component\OperationsService\Dto\GetPortfolioRequestDto;
 use App\Component\OperationsService\OperationsServiceComponentInterface;
 use App\Enum\ToolNameEnum;
 use App\Exception\InfrastructureExceptionInterface;
+use App\Tool\Mapper\GetPortfolioMapper;
 use Mcp\Types\CallToolResult;
 use Mcp\Types\TextContent;
 use Mcp\Types\Tool;
@@ -17,6 +18,7 @@ readonly class GetPortfolioTool implements ToolInterface
     public function __construct(
         private string $accountId,
         private OperationsServiceComponentInterface $operationsServiceComponent,
+        private GetPortfolioMapper $getPortfolioMapper,
     ) {
     }
 
@@ -61,10 +63,11 @@ readonly class GetPortfolioTool implements ToolInterface
         }
 
         // todo маппинг структуры в понятную схему
+        $obj = $this->getPortfolioMapper->map($result);
 
         return new CallToolResult(
             content: [new TextContent(
-                text: json_encode($result)
+                text: json_encode($obj, JSON_UNESCAPED_UNICODE),
             )]
         );
     }

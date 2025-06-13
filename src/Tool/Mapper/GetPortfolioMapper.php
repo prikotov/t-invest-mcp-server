@@ -11,5 +11,7 @@ class GetPortfolioMapper
 {
     public function map(GetPortfolioResponseDto $dto): GetPortfolioDto
     {
+        // todo ? описать структуру в GetPortfolioDto используя StringValueDto, IntValueDto, FloatValueDto
+        return new GetPortfolioDto();
     }
 }
