@@ -21,6 +21,9 @@ class ServerCommandTest extends KernelTestCase
                 args: [
                     'app:mcp-server',
                 ],
+                env: [
+                    'APP_ENV' => 'test',
+                ],
             );
             $client = new Client();
 
@@ -51,10 +54,9 @@ class ServerCommandTest extends KernelTestCase
         ]);
         $this->assertFalse($res->isError);
 
-        print_r($res); exit;
+        $content = $res->content[0]->text ?? '';
+        $data = json_decode($content, true);
 
-//        $resAsJson = json_encode($res, JSON_UNESCAPED_UNICODE);
-//        $this->assertStringContainsString('ISIN код', $resAsJson);
-//        $this->assertStringContainsString('RU0009029540', $resAsJson);
+        $this->assertSame('2019246368', $data['accountId']['value']);
     }
 }
