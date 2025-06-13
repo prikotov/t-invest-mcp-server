@@ -4,6 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.t-invest.token: '%env(APP_T_INVEST_TOKEN)%'
+    app.t-invest.base_url: '%env(APP_T_INVEST_BASE_URL)%'
+    app.t-invest.account_id: '%env(APP_T_INVEST_ACCOUNT_ID)%'
 
 services:
     # default configuration for services in *this* file
@@ -18,3 +21,18 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Component\OperationsService\OperationsServiceComponent:
+        arguments:
+            $token: '%app.t-invest.token%'
+            $baseUrl: '%app.t-invest.base_url%'
+
+    App\Tool\GetPortfolioTool:
+        arguments:
+            $accountId: '%app.t-invest.account_id%'
+
+    App\Factory\ToolFactory:
+        arguments:
+            $tools:
+                get_portfolio: '@App\Tool\GetPortfolioTool'
+                get_portfolio2: '@App\Tool\GetPortfolioTool'

@@ -1,0 +1,6 @@
+.idea
+.env.local
+.git
+var/
+tests/.phpunit.cache
+vendor/

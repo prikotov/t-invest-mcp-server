@@ -1,0 +1,19 @@
+volumes:
+  cache: # cache for composer, psalm, etc
+
+services:
+  t-invest-mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: t-invest-mcp-server:latest
+    user: appuser
+    init: true
+    container_name: t-invest-mcp-server
+    working_dir: /app
+    environment:
+      APP_ENV: dev
+    volumes:
+      - "./:/app"
+      - "cache:/cache"
+    command: ["php", "bin/console"]
