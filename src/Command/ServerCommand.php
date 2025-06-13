@@ -33,7 +33,7 @@ class ServerCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $server = new Server('moex-mcp-server', $this->logger);
+        $server = new Server('t-invest-mcp-server', $this->logger);
 
         // // Register prompt handlers
         // $server->registerHandler('prompts/list', function ($params) {
