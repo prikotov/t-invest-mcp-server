@@ -12,6 +12,7 @@ use App\Exception\InfrastructureException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class OperationsServiceComponent implements OperationsServiceComponentInterface
@@ -51,7 +52,13 @@ class OperationsServiceComponent implements OperationsServiceComponentInterface
             );
             $responseData = $response->toArray();
         } catch (ExceptionInterface $e) {
-            $responseBody = $response->getContent(false);
+            $responseBody = '';
+            if ($e instanceof HttpExceptionInterface) {
+                $responseBody = $e->getResponse()->getContent(false);
+            } elseif (isset($response)) {
+                $responseBody = $response->getContent(false);
+            }
+
             throw new InfrastructureException(
                 message: $e->getMessage()
                 . ($responseBody ? 'body: ' . $responseBody : ''),
