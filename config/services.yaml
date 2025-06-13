@@ -35,4 +35,3 @@ services:
         arguments:
             $tools:
                 get_portfolio: '@App\Tool\GetPortfolioTool'
-                get_portfolio2: '@App\Tool\GetPortfolioTool'
