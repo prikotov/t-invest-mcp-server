@@ -52,16 +52,8 @@ class OperationsServiceComponent implements OperationsServiceComponentInterface
             );
             $responseData = $response->toArray();
         } catch (ExceptionInterface $e) {
-            $responseBody = '';
-            if ($e instanceof HttpExceptionInterface) {
-                $responseBody = $e->getResponse()->getContent(false);
-            } elseif (isset($response)) {
-                $responseBody = $response->getContent(false);
-            }
-
             throw new InfrastructureException(
-                message: $e->getMessage()
-                . ($responseBody ? 'body: ' . $responseBody : ''),
+                message: $e->getMessage(),
                 previous: $e,
             );
         }
