@@ -1,4 +1,5 @@
 services:
-    App\Tests\Fake\OperationsServiceComponentFake:
+    App\Tests\Fake\Component\OperationService\OperationsServiceComponentFake:
         autowire: true
-    App\Component\OperationsService\OperationsServiceComponentInterface: '@App\Tests\Fake\OperationsServiceComponentFake'
+
+    App\Component\OperationsService\OperationsServiceComponentInterface: '@App\Tests\Fake\Component\OperationService\OperationsServiceComponentFake'

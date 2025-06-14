@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Fake;
+namespace App\Tests\Fake\Component\OperationService;
 
 use App\Component\OperationsService\Dto\GetPortfolioRequestDto;
 use App\Component\OperationsService\Dto\GetPortfolioResponseDto;
@@ -9,8 +9,9 @@ use App\Component\OperationsService\OperationsServiceComponentInterface;
 
 class OperationsServiceComponentFake implements OperationsServiceComponentInterface
 {
-    public function __construct(private GetPortfolioResponseMapper $mapper)
-    {
+    public function __construct(
+        private GetPortfolioResponseMapper $mapper
+    ) {
     }
 
     public function getPortfolio(GetPortfolioRequestDto $request): GetPortfolioResponseDto
