@@ -40,5 +40,5 @@
 
 ## T-Invest API
 
-- Для реализации Tools используйте схему OpenAPI, доступную по адресу:
+- Для реализации Tools используй схему OpenAPI, доступную по адресу:
   https://russianinvestments.github.io/investAPI/swagger-ui/openapi.yaml
