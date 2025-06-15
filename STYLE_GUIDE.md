@@ -60,39 +60,110 @@
 - Исключения: документировать условия выбрасывания
 
 ## Тестирование
+
+### Общие правила
 - Фреймворк: PHPUnit
 - Имена тестов: `testMethodName_WhenCondition_ShouldDoSomething`
 - Каждый тест проверяет одну вещь
-- Структура теста:
-  - Arrange (подготовка)
-  - Act (действие)
-  - Assert (проверки)
-- Использование моков через createMock()
+- Структура теста AAA:
+  - **Arrange** (подготовка)
+  - **Act** (действие)
+  - **Assert** (проверки)
+
+### Практики
+- Использование моков через `createMock()`
 - Четкие сообщения в assert
 - Тесты на исключения:
 ```php
 $this->expectException(InfrastructureException::class);
 $this->expectExceptionMessage('Failed to Get Portfolio');
 ```
-- Для сложных тестовых данных - приватные методы-фабрики (createExpectedResponseDto)
+- Для сложных тестовых данных - приватные методы-фабрики (`createExpectedResponseDto`)
 
-## Коммиты
-- Сообщения на английском
+### Интеграционные тесты
+- Должны проверять взаимодействие с реальными компонентами
+- Пример структуры:
+```php
+public function testGetPortfolio_WhenApiAvailable_ShouldReturnValidData(): void
+{
+    // Arrange
+    $client = $this->createClient();
+    
+    // Act 
+    $portfolio = $client->getPortfolio('test-account');
+    
+    // Assert
+    $this->assertInstanceOf(PortfolioDto::class, $portfolio);
+}
+```
+
+### Требования к PR
+- В разделе Testing должен быть приведен результат выполнения тестов:
+```bash
+$ ./bin/phpunit
+PHPUnit 12.2.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.8
+Configuration: /workspace/t-invest-mcp-server/phpunit.dist.xml
+
+...                                                                 3 / 3 (100%)
+
+Time: 00:00.175, Memory: 16.00 MB
+
+OK (3 tests, 4 assertions)
+```
+
+## Работа с Git
+
+### Ветки
+- Название ветки: `codex/<описание-задачи-на-английском>`
+  Пример: `codex/add-mit-license`
+- Только английский язык в названиях
+- Префикс `codex/` для всех feature-веток
+
+### Коммиты
 - Conventional Commits:
-  - feat: для новой функциональности
-  - fix: для исправления багов  
-  - docs: для изменений документации
-  - style: для изменений форматирования
-  - refactor: для рефакторинга
-  - test: для тестов
-  - chore: для вспомогательных изменений
-- Описание в повелительном наклонении ("Add feature" вместо "Added feature")
-- Подробное описание после пустой строки (если нужно)
-- Ссылка на issue (если есть)
+  - `feat`: для новой функциональности
+  - `fix`: для исправления багов  
+  - `docs`: для изменений документации
+  - `style`: для изменений форматирования
+  - `refactor`: для рефакторинга
+  - `test`: для тестов
+  - `chore`: для вспомогательных изменений
+- Сообщения:
+  - На английском языке
+  - В повелительном наклонении ("Add feature" вместо "Added feature")
+  - Подробное описание после пустой строки (если нужно)
+  - Ссылка на issue (если есть)
 
-## Инструменты
+### Pull Requests
+- Заголовок: `[codex] <Краткое описание>`
+  Пример: `[codex] Add MIT license`
+- Обязательные разделы:
+  - **Summary** (на русском):
+    - Список изменений
+    - Затронутые файлы/модули
+    - Важные детали реализации
+  - **Testing**:
+    - Результат выполнения `./bin/phpunit`
+    - Пример вывода тестов
+
+## Инструменты и окружение
+
+### Локальная разработка
+- PHP 8.3+
+- Composer
+- Зависимости: `composer install`
+- Запуск тестов: `./bin/phpunit`
+
+### CI/CD
+- GitHub Actions (см. .github/workflows/ci.yml)
+- Автоматический запуск тестов при push/PR
+- Проверка на PHP 8.3
+
+### Стандарты кода
 - PHP-CS-Fixer: нет конфига (используется .editorconfig)
-- CI: GitHub Actions (см. .github/workflows/ci.yml)
+- Проверка стиля: через CI
 
 ## Исключения
 - Собственные исключения наследуют от InfrastructureException
