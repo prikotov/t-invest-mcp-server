@@ -11,12 +11,37 @@
 {
   "mcpServers": {
     "t-invest": {
-      "command": "podman",
-      "args": ["run", "-i", "--rm", "docker.io/prikotov/t-invest-mcp-server:latest", "bin/server"]
+      "command": "docker",
+      "args": [
+          "run",
+          "-i",
+          "--rm",
+          "-e",
+          "APP_T_INVEST_BASE_URL",
+          "-e",
+          "APP_T_INVEST_TOKEN",
+          "-e",
+          "APP_T_INVEST_ACCOUNT_ID",
+          "docker.io/prikotov/t-invest-mcp-server:latest",
+          "bin/server"
+      ],
+      "env": {
+          "APP_T_INVEST_BASE_URL": "<API ENDPOINT>",
+          "APP_T_INVEST_TOKEN": "<YOUR_TOKEN>",
+          "APP_T_INVEST_ACCOUNT_ID": "<YOUR_ACCOUNT_ID>"
+      }
     }
   }
 }
 ```
+
+где <API ENDPOINT> - [T-Invest REST API Endpoint](https://developer.tbank.ru/invest/intro/developer/protocols/): 
+    - https://invest-public-api.tinkoff.ru/rest/ - продовый сервис
+    - https://sandbox-invest-public-api.tinkoff.ru/rest/ — песочница.
+
+<YOUR_TOKEN> - токен T-Invest REST API. С инструкцией получения токена можно ознакомиться [тут](https://developer.tbank.ru/invest/intro/intro/token#получить-токен).
+
+<YOUR_ACCOUNT_ID> - номер счета в T-Invest к которому подключается MCP Server.  
 
 ## Возможности (Tools)
 
@@ -75,11 +100,19 @@ podman build -t t-invest-mcp-server .
 
 ## Тесты
 
+Запуск тестов локально:
+
 ```bash
 ./bin/phpunit
 ```
 
-Или
+Или через docker:
+
+```bash
+docker-compose run --rm t-invest-mcp-server bin/phpunit
+```
+
+Или через podman:
 
 ```bash
 podman-compose run --rm t-invest-mcp-server bin/phpunit
