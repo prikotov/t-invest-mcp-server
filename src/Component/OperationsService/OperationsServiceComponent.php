@@ -10,29 +10,19 @@ use App\Component\OperationsService\Mapper\GetPortfolioRequestMapper;
 use App\Component\OperationsService\Mapper\GetPortfolioResponseMapper;
 use App\Exception\InfrastructureException;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class OperationsServiceComponent implements OperationsServiceComponentInterface
+readonly class OperationsServiceComponent implements OperationsServiceComponentInterface
 {
-    private HttpClientInterface $httpClient;
-
     public function __construct(
-        private readonly string $token,
-        private readonly string $baseUrl,
-        private readonly LoggerInterface $logger,
-        private readonly GetPortfolioRequestMapper $getPortfolioRequestMapper,
-        private readonly GetPortfolioResponseMapper $getPortfolioResponseMapper,
+        private string $token,
+        private string $baseUrl,
+        private HttpClientInterface $httpClient,
+        private LoggerInterface $logger,
+        private GetPortfolioRequestMapper $getPortfolioRequestMapper,
+        private GetPortfolioResponseMapper $getPortfolioResponseMapper,
     ) {
-        $this->httpClient = HttpClient::create([
-            'headers' => [
-                'Accept' => 'application/json',
-                'Content-type' => 'application/json',
-                'Authorization' => 'Bearer ' . $this->token,
-            ],
-            'timeout' => 10,
-        ]);
     }
 
     public function getPortfolio(GetPortfolioRequestDto $request): GetPortfolioResponseDto
@@ -46,18 +36,25 @@ class OperationsServiceComponent implements OperationsServiceComponentInterface
                 'POST',
                 $url,
                 [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Content-type' => 'application/json',
+                        'Authorization' => 'Bearer ' . $this->token,
+                    ],
+                    'timeout' => 10,
                     'json' => $this->getPortfolioRequestMapper->map($request),
                 ],
             );
             $responseData = $response->toArray();
         } catch (ExceptionInterface $e) {
+            $this->logger->error('Get Portfolio error:', ['data' => $e->getMessage()]);
             throw new InfrastructureException(
-                message: $e->getMessage(),
+                message: 'Failed to Get Portfolio: ' . $e->getMessage(),
                 previous: $e,
             );
         }
 
-        $this->logger->info('Portfolio response:', ['data' => $responseData]);
+        $this->logger->info('Get Portfolio response:', ['data' => $responseData]);
 
         return $this->getPortfolioResponseMapper->map($responseData);
     }

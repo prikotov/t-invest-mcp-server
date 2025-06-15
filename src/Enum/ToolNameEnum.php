@@ -7,4 +7,5 @@ namespace App\Enum;
 enum ToolNameEnum: string
 {
     case getPortfolio = 'get_portfolio';
+    case getAccounts = 'get_accounts';
 }

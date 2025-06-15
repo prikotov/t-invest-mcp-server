@@ -130,10 +130,13 @@ class ClientCommand extends Command
                 $io->warning('No tools available.');
             }
 
+            $io->info('Calling tool: get_accounts');
+            $toolsResult = $session->callTool('get_accounts');
+            $output->writeln(json_encode(json_decode($toolsResult->content[0]->text, true), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
             $io->info('Calling tool: get_portfolio');
             $toolsResult = $session->callTool('get_portfolio');
             $output->writeln(json_encode(json_decode($toolsResult->content[0]->text, true), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-
         } catch (\Exception $e) {
             $io->error('Error: ' . $e->getMessage());
             return Command::FAILURE;

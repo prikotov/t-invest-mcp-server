@@ -27,6 +27,11 @@ services:
             $token: '%app.t-invest.token%'
             $baseUrl: '%app.t-invest.base_url%'
 
+    App\Component\UsersService\UsersServiceComponent:
+        arguments:
+            $token: '%app.t-invest.token%'
+            $baseUrl: '%app.t-invest.base_url%'
+
     App\Tool\GetPortfolioTool:
         arguments:
             $accountId: '%app.t-invest.account_id%'
@@ -35,6 +40,7 @@ services:
         arguments:
             $tools:
                 get_portfolio: '@App\Tool\GetPortfolioTool'
+                get_accounts: '@App\Tool\GetAccountsTool'
 
     App\Command\ClientCommand:
         arguments:

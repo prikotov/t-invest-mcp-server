@@ -15,6 +15,7 @@ class ToolsList
     {
         return [
             ToolNameEnum::getPortfolio,
+            ToolNameEnum::getAccounts,
         ];
     }
 }
