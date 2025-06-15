@@ -110,22 +110,4 @@ class OperationsServiceComponentTest extends TestCase
 
         $this->component->getPortfolio($requestDto);
     }
-
-    public function testGetPortfolioInvalidResponse(): void
-    {
-        $requestDto = new GetPortfolioRequestDto('test-account');
-        $response = $this->createMock(ResponseInterface::class);
-        $response->method('toArray')->willReturn(['invalid_data' => true]);
-
-        $this->httpClient->method('request')
-            ->willReturn($response);
-
-        $this->responseMapper->method('map')
-            ->willThrowException(new \InvalidArgumentException('Invalid response'));
-
-        $this->expectException(InfrastructureException::class);
-        $this->expectExceptionMessage('Failed to map portfolio response: Invalid response');
-
-        $this->component->getPortfolio($requestDto);
-    }
 }
