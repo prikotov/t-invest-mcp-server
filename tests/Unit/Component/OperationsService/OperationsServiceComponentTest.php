@@ -50,25 +50,26 @@ class OperationsServiceComponentTest extends TestCase
         $this->httpClient->method('request')
             ->willReturn($response);
 
-        $moneyData = [
-            'currency' => 'RUB',
-            'units' => 1000,
-            'nano' => 500000000
-        ];
-        $quotationData = [
-            'units' => 100,
-            'nano' => 50000000
-        ];
+        $expectedDto = $this->createExpectedResponseDto();
+        $this->responseMapper->method('map')
+            ->willReturn($expectedDto);
 
-        $moneyVo = MoneyVo::createFromArray($moneyData);
-        $quotationVo = QuotationVo::createFromArray($quotationData);
-        $expectedDto = new GetPortfolioResponseDto(
-            $moneyVo,
+        $result = $this->component->getPortfolio($requestDto);
+        $this->assertSame($expectedDto, $result);
+    }
+
+    private function createExpectedResponseDto(): GetPortfolioResponseDto
+    {
+        $moneyData = ['currency' => 'RUB', 'units' => 1000, 'nano' => 500000000];
+        $quotationData = ['units' => 100, 'nano' => 50000000];
+
+        return new GetPortfolioResponseDto(
+            MoneyVo::createFromArray($moneyData),
             MoneyVo::createFromArray(['currency' => 'USD', 'units' => 500, 'nano' => 0]),
             MoneyVo::createFromArray(['currency' => 'EUR', 'units' => 200, 'nano' => 0]),
             MoneyVo::createFromArray(['currency' => 'RUB', 'units' => 1000, 'nano' => 0]),
             MoneyVo::createFromArray(['currency' => 'RUB', 'units' => 500, 'nano' => 0]),
-            $quotationVo,
+            QuotationVo::createFromArray($quotationData),
             [],
             'test-account',
             MoneyVo::createFromArray(['currency' => 'RUB', 'units' => 1000, 'nano' => 0]),
@@ -78,11 +79,6 @@ class OperationsServiceComponentTest extends TestCase
             MoneyVo::createFromArray(['currency' => 'RUB', 'units' => 1000, 'nano' => 0]),
             QuotationVo::createFromArray(['units' => 100, 'nano' => 50000000])
         );
-        $this->responseMapper->method('map')
-            ->willReturn($expectedDto);
-
-        $result = $this->component->getPortfolio($requestDto);
-        $this->assertSame($expectedDto, $result);
     }
 
     public function testGetPortfolioFailure(): void
@@ -103,21 +99,33 @@ class OperationsServiceComponentTest extends TestCase
 
     public function testGetPortfolioHandlesTransportException(): void
     {
-        $httpClient = $this->createMock(HttpClientInterface::class);
-        $httpClient->method('request')
-            ->willThrowException(new TimeoutException('Connection timeout'));
+        $requestDto = new GetPortfolioRequestDto('test-account');
+        $exception = new TimeoutException('Connection timeout');
 
-        $component = new OperationsServiceComponent(
-            token: 'token',
-            baseUrl: 'http://invalid/',
-            httpClient: $httpClient,
-            logger: new NullLogger(),
-            getPortfolioRequestMapper: new GetPortfolioRequestMapper(),
-            getPortfolioResponseMapper: new GetPortfolioResponseMapper(),
-        );
+        $this->httpClient->method('request')
+            ->willThrowException($exception);
 
         $this->expectException(InfrastructureException::class);
         $this->expectExceptionMessage('Failed to Get Portfolio: Connection timeout');
-        $component->getPortfolio(new GetPortfolioRequestDto('test'));
+
+        $this->component->getPortfolio($requestDto);
+    }
+
+    public function testGetPortfolioInvalidResponse(): void
+    {
+        $requestDto = new GetPortfolioRequestDto('test-account');
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('toArray')->willReturn(['invalid_data' => true]);
+
+        $this->httpClient->method('request')
+            ->willReturn($response);
+
+        $this->responseMapper->method('map')
+            ->willThrowException(new \InvalidArgumentException('Invalid response'));
+
+        $this->expectException(InfrastructureException::class);
+        $this->expectExceptionMessage('Failed to map portfolio response: Invalid response');
+
+        $this->component->getPortfolio($requestDto);
     }
 }
