@@ -132,3 +132,8 @@ podman-compose run --rm t-invest-mcp-server bin/phpunit
 ## Лицензия
 
 Проект распространяется на условиях лицензии MIT. Полный текст лицензии см. в файле [LICENSE](LICENSE).
+
+# Поддержка
+Для вопросов и предложений:
+- [Issues](https://github.com/prikotov/t-invest-mcp-server/issues)
+- Email: prikotov@gmail.com
