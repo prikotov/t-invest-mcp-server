@@ -10,7 +10,6 @@ use App\Tool\Dto\VirtualPortfolioPositionDto;
 class GetPortfolioDto
 {
     public function __construct(
-        public StringValueDto $accountId,
         public FloatValueDto $totalAmountShares,
         public FloatValueDto $totalAmountBonds,
         public FloatValueDto $totalAmountEtf,
@@ -20,10 +19,9 @@ class GetPortfolioDto
         public FloatValueDto $totalAmountSp,
         public FloatValueDto $totalAmountPortfolio,
         public FloatValueDto $expectedYield,
-        /** @var PortfolioPositionDto[] */
-        public array $positions,
-        /** @var VirtualPortfolioPositionDto[] */
-        public array $virtualPositions,
+        public PortfolioPositionsDto $positions,
+//        /** @var VirtualPortfolioPositionDto[] */
+//        public array $virtualPositions,
         public IntValueDto $positionsCount,
         public IntValueDto $virtualPositionsCount,
         public FloatValueDto $dailyYield,

@@ -19,7 +19,7 @@ readonly class GetPortfolioResponseDto
      * @param MoneyVo $totalAmountEtf
      * @param MoneyVo $totalAmountCurrencies
      * @param MoneyVo $totalAmountFutures
-     * @param MoneyVo $expectedYield
+     * @param QuotationVo $expectedYield
      * @param PortfolioPositionDto[] $positions
      * @param string $accountId
      * @param MoneyVo $totalAmountOptions
@@ -35,7 +35,7 @@ readonly class GetPortfolioResponseDto
         public MoneyVo $totalAmountEtf,
         public MoneyVo $totalAmountCurrencies,
         public MoneyVo $totalAmountFutures,
-        public MoneyVo $expectedYield,
+        public QuotationVo $expectedYield,
         public array $positions,
         public string $accountId,
         public MoneyVo $totalAmountOptions,

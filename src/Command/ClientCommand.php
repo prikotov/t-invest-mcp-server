@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use Mcp\Client\Client;
+use Mcp\Client\Transport\EnvironmentHelper;
 use Mcp\Client\Transport\StdioServerParameters;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -12,6 +13,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:mcp-client',
@@ -21,6 +23,9 @@ class ClientCommand extends Command
 {
     public function __construct(
         private LoggerInterface $logger,
+        private readonly string $token,
+        private readonly string $baseUrl,
+        private readonly string $accountId,
     ) {
         parent::__construct();
     }
@@ -38,30 +43,56 @@ class ClientCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $io = new SymfonyStyle($input, $output);
+
         $via = $input->getOption('via');
         switch ($via) {
             case 'podman':
+                EnvironmentHelper::initialize();
                 $serverParams = new StdioServerParameters(
                     command: 'podman',
                     args: [
                         'run',
                         '--rm',
                         '-i',
+                        '-e',
+                        'APP_T_INVEST_BASE_URL',
+                        '-e',
+                        'APP_T_INVEST_TOKEN',
+                        '-e',
+                        'APP_T_INVEST_ACCOUNT_ID',
                         't-invest-mcp-server',
                         'bin/server',
                     ],
+                    env: array_merge(EnvironmentHelper::getDefaultEnvironment(), [
+                        'APP_T_INVEST_BASE_URL' => $this->baseUrl,
+                        'APP_T_INVEST_TOKEN' => $this->token,
+                        'APP_T_INVEST_ACCOUNT_ID' => $this->accountId,
+                    ])
                 );
                 break;
             case 'docker':
+                EnvironmentHelper::initialize();
                 $serverParams = new StdioServerParameters(
                     command: 'docker',
                     args: [
                         'run',
                         '--rm',
                         '-i',
+                        '-e',
+                        'APP_T_INVEST_BASE_URL',
+                        '-e',
+                        'APP_T_INVEST_TOKEN',
+                        '-e',
+                        'APP_T_INVEST_ACCOUNT_ID',
                         't-invest-mcp-server',
                         'bin/server',
                     ],
+                    env: array_merge(EnvironmentHelper::getDefaultEnvironment(), [
+                        'APP_T_INVEST_BASE_URL' => $this->baseUrl,
+                        'APP_T_INVEST_TOKEN' => $this->token,
+                        'APP_T_INVEST_ACCOUNT_ID' => $this->accountId,
+                    ])
                 );
                 break;
             case 'console':
@@ -71,11 +102,13 @@ class ClientCommand extends Command
                 );
         }
 
+        $io->title('MCP Client Test');
+
         // Create client instance
         $client = new Client($this->logger);
 
         try {
-            echo("Starting to connect\n");
+            $io->info('Connecting to MCP server...');
             // Connect to the server using stdio transport
             $session = $client->connect(
                 commandOrUrl: $serverParams->getCommand(),
@@ -83,40 +116,34 @@ class ClientCommand extends Command
                 env: $serverParams->getEnv(),
             );
 
-            //$toolsResult = $session->callTool();
-
-            echo("Starting to get available prompts\n");
+            $io->info('Fetching list of available tools...');
             $toolsResult = $session->listTools();
             if (!empty($toolsResult->tools)) {
-                echo "Available tools:\n";
+                $io->info('Available tools:');
                 foreach ($toolsResult->tools as $tool) {
-                    echo "  - Name: " . $tool->name . "\n";
-                    echo "    Description: " . $tool->description . "\n";
-                    echo "    Arguments:\n";
-                    echo "      - " . json_encode($tool->inputSchema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . "\n";
-//                    if (!empty($tool->inputSchema->properties)) {
-//                        foreach ($tool->inputSchema->properties as $property) {
-//                            echo "      - " . $property . " (" . ($argument->required ? "required" : "optional") . "): " . $argument->description . "\n";
-//                        }
-//                    } else {
-//                        echo "      (None)\n";
-//                    }
+                    $output->writeln('  - Name: ' . $tool->name);
+                    $output->writeln('    Description: ' . $tool->description);
+                    $output->writeln('    Arguments:');
+                    $output->writeln('      - ' . json_encode($tool->inputSchema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
                 }
             } else {
-                echo "No prompts available.\n";
+                $io->warning('No tools available.');
             }
+
+            $io->info('Calling tool: get_portfolio');
+            $toolsResult = $session->callTool('get_portfolio');
+            $output->writeln(json_encode(json_decode($toolsResult->content[0]->text, true), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
         } catch (\Exception $e) {
-            echo "Error: " . $e->getMessage() . "\n";
-            exit(1);
+            $io->error('Error: ' . $e->getMessage());
+            return Command::FAILURE;
         } finally {
             // Close the server connection
-            if (isset($client)) {
-                $client->close();
-                echo "Close the server connection.\n";
-            }
+            $client->close();
+            $io->info('Close the server connection.');
         }
 
-        echo "Done.\n";
+        $io->success('Done.');
 
         return Command::SUCCESS;
     }

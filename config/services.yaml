@@ -35,3 +35,9 @@ services:
         arguments:
             $tools:
                 get_portfolio: '@App\Tool\GetPortfolioTool'
+
+    App\Command\ClientCommand:
+        arguments:
+            $token: '%app.t-invest.token%'
+            $baseUrl: '%app.t-invest.base_url%'
+            $accountId: '%app.t-invest.account_id%'

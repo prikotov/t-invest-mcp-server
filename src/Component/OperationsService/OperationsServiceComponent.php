@@ -57,6 +57,8 @@ class OperationsServiceComponent implements OperationsServiceComponentInterface
             );
         }
 
+        $this->logger->info('Portfolio response:', ['data' => $responseData]);
+
         return $this->getPortfolioResponseMapper->map($responseData);
     }
 }

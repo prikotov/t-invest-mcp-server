@@ -29,7 +29,9 @@ readonly class GetPortfolioTool implements ToolInterface
 
     public function getDescription(): string
     {
-        return 'Получить портфель.';
+        return 'Возвращает информацию о текущем портфеле пользователя: '
+            . 'тикер, количество, средняя и текущая цена, доходность, купонный доход (для облигаций). '
+            . 'Портфель включает акции, облигации, фонды (ETF), валюту, фьючерсы, опционы и структурные продукты. ';
     }
 
     public function getTool(): Tool

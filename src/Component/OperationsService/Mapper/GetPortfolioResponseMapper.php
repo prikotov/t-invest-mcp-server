@@ -74,7 +74,7 @@ readonly class GetPortfolioResponseMapper
             MoneyVo::createFromArray($data['totalAmountEtf']),
             MoneyVo::createFromArray($data['totalAmountCurrencies']),
             MoneyVo::createFromArray($data['totalAmountFutures']),
-            MoneyVo::createFromArray($data['expectedYield']),
+            QuotationVo::createFromArray($data['expectedYield']),
             $positions,
             $data['accountId'],
             MoneyVo::createFromArray($data['totalAmountOptions']),

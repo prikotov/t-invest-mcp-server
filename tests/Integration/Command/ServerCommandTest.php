@@ -6,6 +6,7 @@ namespace App\Tests\Integration\Command;
 
 use Mcp\Client\Client;
 use Mcp\Client\ClientSession;
+use Mcp\Client\Transport\EnvironmentHelper;
 use Mcp\Client\Transport\StdioServerParameters;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -16,14 +17,15 @@ class ServerCommandTest extends KernelTestCase
     private function startSession(): ClientSession
     {
         if (!isset($this->clientSession)) {
+            EnvironmentHelper::initialize();
             $serverParams = new StdioServerParameters(
                 command: 'bin/console',
                 args: [
                     'app:mcp-server',
                 ],
-                env: [
+                env: array_merge(EnvironmentHelper::getDefaultEnvironment(), [
                     'APP_ENV' => 'test',
-                ],
+                ]),
             );
             $client = new Client();
 
@@ -49,14 +51,12 @@ class ServerCommandTest extends KernelTestCase
     public function testGetSecuritySpecification(): void
     {
         $session = $this->startSession();
-        $res = $session->callTool('get_portfolio', [
-            //'security' => 'SBER',
-        ]);
+        $res = $session->callTool('get_portfolio');
         $this->assertFalse($res->isError);
 
         $content = $res->content[0]->text ?? '';
         $data = json_decode($content, true);
 
-        $this->assertSame('2019246368', $data['accountId']['value']);
+        $this->assertSame(0, $data['totalAmountShares']['value']);
     }
 }
