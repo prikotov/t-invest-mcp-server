@@ -22,7 +22,7 @@
           "APP_T_INVEST_TOKEN",
           "-e",
           "APP_T_INVEST_ACCOUNT_ID",
-          "docker.io/prikotov/t-invest-mcp-server:latest",
+          "prikotov/t-invest-mcp-server:latest",
           "bin/server"
       ],
       "env": {
@@ -37,7 +37,7 @@
 
 где <API ENDPOINT> - [T-Invest REST API Endpoint](https://developer.tbank.ru/invest/intro/developer/protocols/): 
     - https://invest-public-api.tinkoff.ru/rest/ - продовый сервис
-    - https://sandbox-invest-public-api.tinkoff.ru/rest/ — песочница.
+    - https://sandbox-invest-public-api.tinkoff.ru/rest/ - песочница.
 
 <YOUR_TOKEN> - токен T-Invest REST API. С инструкцией получения токена можно ознакомиться [тут](https://developer.tbank.ru/invest/intro/intro/token#получить-токен).
 
