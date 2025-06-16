@@ -19,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'app:mcp-server',
-    description: 'Протестировать mcp',
+    description: 'Запуск MCP сервера',
 )]
 class ServerCommand extends Command
 {
