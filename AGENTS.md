@@ -27,10 +27,7 @@
 
 ### Testing
 
-- [ ] Добавить результат выполнения команды `./bin/phpunit`
-
-  Пример вывода:
-
+- [ ] Добавить в PR результат выполнения команды `./bin/phpunit`. Результат выполнения тестов взять из консоли. Пример:
   ```
   $ ./bin/phpunit
   PHPUnit 12.2.1 by Sebastian Bergmann and contributors.
