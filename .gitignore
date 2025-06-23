@@ -1,4 +1,5 @@
 .idea
+.aider*
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -14,5 +15,5 @@
 /phpunit.xml
 /tests/.phpunit.cache/
 ###< phpunit/phpunit ###
-.aider*
+
 

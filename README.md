@@ -36,8 +36,8 @@
 ```
 
 где <API ENDPOINT> - [T-Invest REST API Endpoint](https://developer.tbank.ru/invest/intro/developer/protocols/): 
-    - https://invest-public-api.tinkoff.ru/rest/ - продовый сервис
-    - https://sandbox-invest-public-api.tinkoff.ru/rest/ - песочница.
+- https://invest-public-api.tinkoff.ru/rest/ - продовый сервис
+- https://sandbox-invest-public-api.tinkoff.ru/rest/ - песочница.
 
 <YOUR_TOKEN> - токен T-Invest REST API. С инструкцией получения токена можно ознакомиться [тут](https://developer.tbank.ru/invest/intro/intro/token#получить-токен).
 
