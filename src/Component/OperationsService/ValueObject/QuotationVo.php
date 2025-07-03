@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Component\OperationsService\ValueObject;
 
-use InvalidArgumentException;
 
 /**
  * Котировка - денежная сумма без указания валюты
@@ -19,14 +18,10 @@ readonly class QuotationVo
     ) {
     }
 
-    public static function createFromArray(array $data): self
+    public static function createFromArray(?array $data): self
     {
-        if (!isset($data['units']) && !isset($data['nano'])) {
-            throw new InvalidArgumentException('Invalid quotation data');
-        }
-
-        $units = (string)($data['units']);
-        $nano = (string)($data['nano']);
+        $units = (string)($data['units'] ?? 0);
+        $nano = (string)($data['nano'] ?? 0);
 
         $value = round((int)$units + (int)$nano / 1000000000, 9);
 
