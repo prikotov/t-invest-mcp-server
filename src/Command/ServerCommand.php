@@ -8,6 +8,8 @@ use App\Enum\ToolNameEnum;
 use App\Factory\ToolFactory;
 use App\List\ToolsList;
 use InvalidArgumentException;
+use Mcp\Types\CallToolResult;
+use Mcp\Types\TextContent;
 use Mcp\Server\Server;
 use Mcp\Server\ServerRunner;
 use Mcp\Types\ListToolsResult;
@@ -48,13 +50,24 @@ class ServerCommand extends Command
 
         $server->registerHandler('tools/call', function ($params) {
             $this->logger->info('tools/call', ['params' => $params]);
-            $name = ToolNameEnum::tryFrom($params->name);
-            if ($name === null) {
-                throw new InvalidArgumentException("Unknown tool: {$params->name}");
-            }
 
-            $tool = $this->toolFactory->create($name);
-            return $tool->__invoke($params->arguments);
+            try {
+                $name = ToolNameEnum::tryFrom($params->name);
+                if ($name === null) {
+                    throw new InvalidArgumentException("Unknown tool: {$params->name}");
+                }
+
+                $tool = $this->toolFactory->create($name);
+
+                return $tool->__invoke($params->arguments);
+            } catch (\Throwable $e) {
+                $this->logger->error('tools/call error', ['exception' => $e]);
+
+                return new CallToolResult(
+                    content: [new TextContent(text: $e->getMessage())],
+                    isError: true,
+                );
+            }
         });
 
         // Create initialization options and run server
