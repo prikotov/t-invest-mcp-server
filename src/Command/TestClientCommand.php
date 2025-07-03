@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use Mcp\Client\Client;
+use Mcp\Client\ClientSession;
 use Mcp\Client\Transport\EnvironmentHelper;
 use Mcp\Client\Transport\StdioServerParameters;
 use Psr\Log\LoggerInterface;
@@ -16,10 +17,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'app:mcp-client',
-    description: 'Протестировать MCP',
+    name: 'app:test-client',
+    description: 'Протестировать MCP клиент',
 )]
-class ClientCommand extends Command
+class TestClientCommand extends Command
 {
     public function __construct(
         private LoggerInterface $logger,
@@ -98,7 +99,7 @@ class ClientCommand extends Command
             case 'console':
             default:
                 $serverParams = new StdioServerParameters(
-                    command: 'bin/server',
+                    command: 'bin/server', args: ['-vv'],
                 );
         }
 
@@ -130,15 +131,15 @@ class ClientCommand extends Command
                 $io->warning('No tools available.');
             }
 
-            $io->info('Calling tool: get_accounts');
-            $toolsResult = $session->callTool('get_accounts');
-            $output->writeln(json_encode(json_decode($toolsResult->content[0]->text, true), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            $fError = false;
+            $fError |= !$this->runTool($io, $output, $session, 'get_accounts');
+            $fError |= !$this->runTool($io, $output, $session, 'get_portfolio');
 
-            $io->info('Calling tool: get_portfolio');
-            $toolsResult = $session->callTool('get_portfolio');
-            $output->writeln(json_encode(json_decode($toolsResult->content[0]->text, true), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         } catch (\Exception $e) {
-            $io->error('Error: ' . $e->getMessage());
+            $io->error([
+                'Exception' => $e::class,
+                'Message' => $e->getMessage(),
+            ]);
             return Command::FAILURE;
         } finally {
             // Close the server connection
@@ -146,8 +147,31 @@ class ClientCommand extends Command
             $io->info('Close the server connection.');
         }
 
-        $io->success('Done.');
+        if ($fError) {
+            $io->error('One or more tools failed to execute.');
+            return Command::FAILURE;
+        }
 
+        $io->success('Done.');
         return Command::SUCCESS;
+    }
+
+    private function runTool(SymfonyStyle $io, OutputInterface $output, ClientSession $session, string $toolName): bool
+    {
+        $io->info("Calling tool: $toolName");
+        $result = $session->callTool($toolName);
+        if ($result->isError) {
+            $io->error($result->content[0]->text);
+            return false;
+        }
+
+        $decoded = json_decode($result->content[0]->text, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $io->warning("Invalid JSON from tool $toolName: " . $result->content[0]->text);
+            return false;
+        }
+
+        $output->writeln(json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        return true;
     }
 }

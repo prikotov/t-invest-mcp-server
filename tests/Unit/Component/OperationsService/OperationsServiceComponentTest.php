@@ -92,7 +92,7 @@ class OperationsServiceComponentTest extends TestCase
             $this->component->getPortfolio($requestDto);
             $this->fail('Expected InfrastructureException was not thrown');
         } catch (InfrastructureException $e) {
-            $this->assertSame('Failed to Get Portfolio: API error', $e->getMessage());
+            $this->assertSame('GetPortfolio request failed: API error', $e->getMessage());
             $this->assertSame($exception, $e->getPrevious());
         }
     }
@@ -106,7 +106,7 @@ class OperationsServiceComponentTest extends TestCase
             ->willThrowException($exception);
 
         $this->expectException(InfrastructureException::class);
-        $this->expectExceptionMessage('Failed to Get Portfolio: Connection timeout');
+        $this->expectExceptionMessage('GetPortfolio request failed: Connection timeout');
 
         $this->component->getPortfolio($requestDto);
     }

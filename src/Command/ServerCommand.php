@@ -48,21 +48,19 @@ class ServerCommand extends Command
             return new ListToolsResult($tools);
         });
 
-        $server->registerHandler('tools/call', function ($params) {
-            $this->logger->info('tools/call', ['params' => $params]);
-
+        $server->registerHandler('tools/call', function ($params): CallToolResult {
+            $this->logger->info('SERVER: tools/call - START', ['params' => $params]);
             try {
                 $name = ToolNameEnum::tryFrom($params->name);
                 if ($name === null) {
                     throw new InvalidArgumentException("Unknown tool: {$params->name}");
                 }
-
                 $tool = $this->toolFactory->create($name);
-
-                return $tool->__invoke($params->arguments);
+                $result = $tool->__invoke($params->arguments);
+                $this->logger->info('SERVER: tools/call - DONE', ['params' => $params]);
+                return $result;
             } catch (\Throwable $e) {
-                $this->logger->error('tools/call error', ['exception' => $e]);
-
+                $this->logger->error('SERVER: tools/call - ERROR', ['exception' => $e]);
                 return new CallToolResult(
                     content: [new TextContent(text: $e->getMessage())],
                     isError: true,

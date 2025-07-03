@@ -42,7 +42,7 @@ services:
                 get_portfolio: '@App\Tool\GetPortfolioTool'
                 get_accounts: '@App\Tool\GetAccountsTool'
 
-    App\Command\ClientCommand:
+    App\Command\TestClientCommand:
         arguments:
             $token: '%app.t-invest.token%'
             $baseUrl: '%app.t-invest.base_url%'

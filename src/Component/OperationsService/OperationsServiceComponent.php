@@ -15,6 +15,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 readonly class OperationsServiceComponent implements OperationsServiceComponentInterface
 {
+    private const int TIMEOUT = 10;
+
     public function __construct(
         private string $token,
         private string $baseUrl,
@@ -27,9 +29,9 @@ readonly class OperationsServiceComponent implements OperationsServiceComponentI
 
     public function getPortfolio(GetPortfolioRequestDto $request): GetPortfolioResponseDto
     {
-        $url = $this->baseUrl . 'tinkoff.public.invest.api.contract.v1.OperationsService/GetPortfolio';
+        $url = rtrim($this->baseUrl, '/') . '/tinkoff.public.invest.api.contract.v1.OperationsService/GetPortfolio';
 
-        $this->logger->info('Get Portfolio', ['url' => $url]);
+        $this->logger->info('Fetching portfolio', ['url' => $url]);
 
         try {
             $response = $this->httpClient->request(
@@ -41,20 +43,24 @@ readonly class OperationsServiceComponent implements OperationsServiceComponentI
                         'Content-type' => 'application/json',
                         'Authorization' => 'Bearer ' . $this->token,
                     ],
-                    'timeout' => 10,
+                    'timeout' => self::TIMEOUT,
                     'json' => $this->getPortfolioRequestMapper->map($request),
                 ],
             );
             $responseData = $response->toArray();
         } catch (ExceptionInterface $e) {
-            $this->logger->error('Get Portfolio error:', ['data' => $e->getMessage()]);
+            $this->logger->error('GetPortfolio request failed', ['error' => $e->getMessage()]);
             throw new InfrastructureException(
-                message: 'Failed to Get Portfolio: ' . $e->getMessage(),
+                message: 'GetPortfolio request failed: ' . $e->getMessage(),
                 previous: $e,
             );
         }
 
-        $this->logger->info('Get Portfolio response:', ['data' => $responseData]);
+        // ВНИМАНИЕ: при логировании полного $responseData пропадают ошибки уровня выше.
+        // Вероятно, из-за сериализации больших массивов или вложенных структур в логгере.
+        // Не логируем ответ целиком, чтобы не терять исключения.
+        //$this->logger->info('Portfolio data received', ['data' => $responseData]);
+        $this->logger->info('Portfolio data received');
 
         return $this->getPortfolioResponseMapper->map($responseData);
     }

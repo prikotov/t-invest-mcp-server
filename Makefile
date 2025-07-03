@@ -24,6 +24,7 @@ help: ## Показать помощь
 build: ## Сборка контейнера
 	docker build -t $(IMAGE) .
 
+.PHONY: push
 push: ## Публикация контейнера
 	docker push $(IMAGE)
 
@@ -42,5 +43,5 @@ test: ## Запустить тесты
 	$(COMPOSE) run --rm mcp-server bin/console cache:clear
 	$(COMPOSE) run --rm mcp-server bin/console -vv app:test
 	$(COMPOSE) run --rm mcp-server bin/phpunit
-	$(COMPOSE) run --rm mcp-server bin/console -vv app:mcp-client --via=console
-
+	$(COMPOSE) run --rm mcp-server bin/console -vv app:test-server
+	$(COMPOSE) run --rm mcp-server bin/console -vv app:test-client --via=console

@@ -20,10 +20,10 @@ final readonly class PortfolioPositionDto
         public MoneyVo $averagePositionPrice,
         public QuotationVo $expectedYield,
         public ?MoneyVo $currentNkd,
-        public ?MoneyVo $averagePositionPricePt,
+        //public ?MoneyVo $averagePositionPricePt, @deprecated
         public MoneyVo $currentPrice,
         public MoneyVo $averagePositionPriceFifo,
-        public QuotationVo $quantityLots,
+        //public QuotationVo $quantityLots, @deprecated
         public bool $blocked,
         public ?QuotationVo $blockedLots,
         public string $positionUid,

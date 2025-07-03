@@ -13,6 +13,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 readonly class UsersServiceComponent implements UsersServiceComponentInterface
 {
+    private const int TIMEOUT = 10;
+    private const int STATUS_OPENED_ACCOUNTS = 2;
+
     public function __construct(
         private string $token,
         private string $baseUrl,
@@ -24,9 +27,9 @@ readonly class UsersServiceComponent implements UsersServiceComponentInterface
 
     public function getAccounts(): GetAccountsResponseDto
     {
-        $url = $this->baseUrl . 'tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts';
+        $url = rtrim($this->baseUrl, '/') . '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts';
 
-        $this->logger->info('Get Accounts', ['url' => $url]);
+        $this->logger->info('Fetching accounts', ['url' => $url]);
 
         $response = null;
         try {
@@ -39,17 +42,17 @@ readonly class UsersServiceComponent implements UsersServiceComponentInterface
                         'Content-type' => 'application/json',
                         'Authorization' => 'Bearer ' . $this->token,
                     ],
-                    'timeout' => 10,
+                    'timeout' => self::TIMEOUT,
                     'json' => [
-                        'status' => 2
+                        'status' => self::STATUS_OPENED_ACCOUNTS,
                     ]
                 ],
             );
             $responseData = $response->toArray();
         } catch (ExceptionInterface $e) {
-            $this->logger->error('Get Portfolio error', [
-                'data' => $e->getMessage(),
-                'body' => $response?->getContent(false),
+            $this->logger->error('GetAccounts request failed', [
+                'error' => $e->getMessage(),
+                'response_body' => $response?->getContent(false) ?? null,
             ]);
             throw new InfrastructureException(
                 message: 'Failed to Get Accounts: ' . $e->getMessage(),
@@ -57,7 +60,7 @@ readonly class UsersServiceComponent implements UsersServiceComponentInterface
             );
         }
 
-        $this->logger->info('Get Accounts response:', ['data' => $responseData]);
+        $this->logger->info('Accounts data received');
 
         return $this->getAccountsResponseMapper->map($responseData);
     }
