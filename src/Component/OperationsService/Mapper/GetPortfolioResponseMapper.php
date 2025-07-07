@@ -12,7 +12,7 @@ use App\Component\OperationsService\ValueObject\QuotationVo;
 use DateMalformedStringException;
 use DateTimeImmutable;
 
-readonly class GetPortfolioResponseMapper
+final readonly class GetPortfolioResponseMapper
 {
     /**
      * @throws DateMalformedStringException
@@ -30,12 +30,12 @@ readonly class GetPortfolioResponseMapper
                 isset($position['currentNkd'])
                     ? MoneyVo::createFromArray($position['currentNkd'])
                     : null,
-//                isset($position['averagePositionPricePt'])
-//                    ? MoneyVo::createFromArray($position['averagePositionPricePt'])
-//                    : null,
+                //                isset($position['averagePositionPricePt'])
+                //                    ? MoneyVo::createFromArray($position['averagePositionPricePt'])
+                //                    : null,
                 MoneyVo::createFromArray($position['currentPrice']),
                 MoneyVo::createFromArray($position['averagePositionPriceFifo']),
-//                QuotationVo::createFromArray($position['quantityLots']),
+                //                QuotationVo::createFromArray($position['quantityLots']),
                 $position['blocked'],
                 isset($position['blockedLots'])
                     ? QuotationVo::createFromArray($position['blockedLots'])

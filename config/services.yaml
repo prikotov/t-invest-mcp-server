@@ -32,15 +32,15 @@ services:
             $token: '%app.t-invest.token%'
             $baseUrl: '%app.t-invest.base_url%'
 
-    App\Tool\GetPortfolioTool:
+    App\Tool\GetPortfolio\GetPortfolioTool:
         arguments:
             $accountId: '%app.t-invest.account_id%'
 
     App\Factory\ToolFactory:
         arguments:
             $tools:
-                get_portfolio: '@App\Tool\GetPortfolioTool'
-                get_accounts: '@App\Tool\GetAccountsTool'
+                get_portfolio: '@App\Tool\GetPortfolio\GetPortfolioTool'
+                get_accounts: '@App\Tool\GetAccounts\GetAccountsTool'
 
     App\Command\TestClientCommand:
         arguments:

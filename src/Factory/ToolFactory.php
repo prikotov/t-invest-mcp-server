@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Factory;
 
 use App\Enum\ToolNameEnum;
 use App\Tool\ToolInterface;
 use InvalidArgumentException;
 
-readonly class ToolFactory
+final readonly class ToolFactory
 {
     /**
      * @param ToolInterface[] $tools

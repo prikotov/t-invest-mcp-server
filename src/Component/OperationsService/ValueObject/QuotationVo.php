@@ -10,7 +10,7 @@ use InvalidArgumentException;
  * Котировка - денежная сумма без указания валюты
  * @link https://developer.tbank.ru/invest/services/operations/methods#quotation
  */
-readonly class QuotationVo
+final readonly class QuotationVo
 {
     private function __construct(
         private float $value,
@@ -28,7 +28,7 @@ readonly class QuotationVo
         $units = (string)($data['units']);
         $nano = (string)($data['nano']);
 
-        $value = round((int)$units + (int)$nano / 1000000000, 9);
+        $value = round((float)$units + (float)$nano / 1000000000.0, 9);
 
         return new self(
             $value,

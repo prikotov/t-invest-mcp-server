@@ -6,7 +6,7 @@ namespace App\Component\OperationsService\Mapper;
 
 use App\Component\OperationsService\Dto\GetPortfolioRequestDto;
 
-readonly class GetPortfolioRequestMapper
+final readonly class GetPortfolioRequestMapper
 {
     public function map(GetPortfolioRequestDto $request): array
     {

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tool\Dto;
+namespace App\Tool\GetPortfolio\Dto;
 
-class PortfolioPositionFieldDescriptionDto
+final readonly class PortfolioPositionFieldDescriptionDto
 {
     public function __construct(
-        public string $ticker,
-        public string $instrumentType,
+        public ?string $ticker,
+        public ?string $instrumentType,
         public string $quantity,
         public string $averagePositionPrice,
         public string $expectedYield,
@@ -19,7 +19,7 @@ class PortfolioPositionFieldDescriptionDto
         public string $varMargin,
         public string $expectedYieldFifo,
         public string $dailyYield,
-        public string $summary,
+        public ?string $summary,
     ) {
     }
 }

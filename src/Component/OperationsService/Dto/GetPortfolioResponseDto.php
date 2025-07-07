@@ -11,7 +11,7 @@ use App\Component\OperationsService\ValueObject\QuotationVo;
  * Текущий портфель по счету.
  * @link https://developer.tbank.ru/invest/services/operations/methods#portfolioresponse
  */
-readonly class GetPortfolioResponseDto
+final readonly class GetPortfolioResponseDto
 {
     /**
      * @param MoneyVo $totalAmountShares

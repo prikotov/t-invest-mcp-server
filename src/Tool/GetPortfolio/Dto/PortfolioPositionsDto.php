@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tool\Dto;
+namespace App\Tool\GetPortfolio\Dto;
 
-class PortfolioPositionsDto
+final readonly class PortfolioPositionsDto
 {
     /**
      * @param PortfolioPositionFieldDescriptionDto $fieldDescriptions

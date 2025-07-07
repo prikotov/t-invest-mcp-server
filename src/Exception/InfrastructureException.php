@@ -6,6 +6,6 @@ namespace App\Exception;
 
 use RuntimeException;
 
-class InfrastructureException extends RuntimeException implements InfrastructureExceptionInterface
+final class InfrastructureException extends RuntimeException implements InfrastructureExceptionInterface
 {
 }

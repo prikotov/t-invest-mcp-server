@@ -45,3 +45,19 @@ test: ## Запустить тесты
 	$(COMPOSE) run --rm mcp-server bin/phpunit
 	$(COMPOSE) run --rm mcp-server bin/console -vv app:test-server
 	$(COMPOSE) run --rm mcp-server bin/console -vv app:test-client --via=console
+
+.PHONY: lint
+lint: ## Запустить линтер
+	./vendor/bin/parallel-lint config src tests
+
+.PHONY: tests
+tests: ## Запустить тесты
+	php -d pcov.enabled=1 bin/phpunit tests/Unit --coverage-text --only-summary-for-coverage-text
+
+.PHONY: psalm
+psalm: ## Запустить статический анализ
+	vendor/bin/psalm --no-cache --no-progress --output-format=console
+
+.PHONY: phpcs
+phpcs: ## Проверить стиль кода
+	vendor/bin/phpcs -q && echo "PHPCS passed"

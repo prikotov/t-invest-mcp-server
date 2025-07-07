@@ -2,5 +2,6 @@
 .env.local
 .git
 tests/
+tmp/
 var/
 vendor/

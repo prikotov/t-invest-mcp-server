@@ -8,11 +8,12 @@ use App\Enum\ToolNameEnum;
 use App\Factory\ToolFactory;
 use App\List\ToolsList;
 use InvalidArgumentException;
-use Mcp\Types\CallToolResult;
-use Mcp\Types\TextContent;
 use Mcp\Server\Server;
 use Mcp\Server\ServerRunner;
+use Mcp\Types\CallToolResult;
 use Mcp\Types\ListToolsResult;
+use Mcp\Types\TextContent;
+use Override;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -23,7 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
     name: 'app:mcp-server',
     description: 'Запуск MCP сервера',
 )]
-class ServerCommand extends Command
+final class ServerCommand extends Command
 {
     public function __construct(
         private readonly LoggerInterface $logger,
@@ -33,12 +34,13 @@ class ServerCommand extends Command
         parent::__construct();
     }
 
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $server = new Server('t-invest-mcp-server', $this->logger);
 
         // Register tool handlers
-        $server->registerHandler('tools/list', function ($params) {
+        $server->registerHandler('tools/list', function (mixed $params) {
             $this->logger->info('tools/list', ['params' => $params]);
             $tools = [];
             foreach ($this->toolsList->get() as $toolItem) {
@@ -48,7 +50,7 @@ class ServerCommand extends Command
             return new ListToolsResult($tools);
         });
 
-        $server->registerHandler('tools/call', function ($params): CallToolResult {
+        $server->registerHandler('tools/call', function (mixed $params): CallToolResult {
             $this->logger->info('SERVER: tools/call - START', ['params' => $params]);
             try {
                 $name = ToolNameEnum::tryFrom($params->name);

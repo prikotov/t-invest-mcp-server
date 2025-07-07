@@ -39,7 +39,8 @@ class ServerCommandTest extends KernelTestCase
         return $this->clientSession;
     }
 
-    public function testListTools(): void {
+    public function testListTools(): void
+    {
         $session = $this->startSession();
 
         $toolsResult = $session->listTools();
@@ -52,7 +53,7 @@ class ServerCommandTest extends KernelTestCase
     {
         $session = $this->startSession();
         $res = $session->callTool('get_portfolio');
-        $this->assertFalse($res->isError);
+        $this->assertFalse($res->isError, $res->content[0]->text);
 
         $content = $res->content[0]->text ?? '';
         $data = json_decode($content, true);

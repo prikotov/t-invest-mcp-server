@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tool\Dto;
 
-class FloatValueDto
+final readonly class FloatValueDto
 {
     public function __construct(
         public float $value,

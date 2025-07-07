@@ -10,7 +10,7 @@ use App\Component\OperationsService\Enum\CurrencyEnum;
  * Запрос получения текущего портфеля по счету.
  * @link https://developer.tbank.ru/invest/services/operations/methods#portfoliorequest
  */
-class GetPortfolioRequestDto
+final readonly class GetPortfolioRequestDto
 {
     public function __construct(
         public string $accountId,

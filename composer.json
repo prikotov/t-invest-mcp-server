@@ -19,6 +19,7 @@
     },
     "config": {
         "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
             "php-http/discovery": true,
             "symfony/flex": true,
             "symfony/runtime": true
@@ -68,8 +69,14 @@
         }
     },
     "require-dev": {
+        "dg/bypass-finals": "^1.9",
+        "php-parallel-lint/php-parallel-lint": "^1.4",
         "phpunit/phpunit": "^12.2.5",
+        "psalm/plugin-symfony": "^5.2",
+        "slevomat/coding-standard": "~8.0",
+        "squizlabs/php_codesniffer": "^3.13",
         "symfony/browser-kit": "7.3.*",
-        "symfony/css-selector": "7.3.*"
+        "symfony/css-selector": "7.3.*",
+        "vimeo/psalm": "^6.12"
     }
 }

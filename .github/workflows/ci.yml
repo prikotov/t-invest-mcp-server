@@ -25,7 +25,18 @@ jobs:
           key: ${{ runner.os }}-php-${{ hashFiles('composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-php-
+
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
+
+      - name: Run linter
+        run: ./vendor/bin/parallel-lint src tests
+
+      - name: Run Psalm
+        run: ./vendor/bin/psalm --no-progress --output-format=console
+
+      - name: Run PHP_CodeSniffer
+        run: ./vendor/bin/phpcs -q .
+
       - name: Run tests
         run: ./bin/phpunit

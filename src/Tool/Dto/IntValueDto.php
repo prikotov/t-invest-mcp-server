@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tool\Dto;
 
-class IntValueDto
+final readonly class IntValueDto
 {
     public function __construct(
         public int $value,

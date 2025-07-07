@@ -7,11 +7,12 @@ namespace App\Component\UsersService;
 use App\Component\UsersService\Dto\GetAccountsResponseDto;
 use App\Component\UsersService\Mapper\GetAccountsResponseMapper;
 use App\Exception\InfrastructureException;
+use Override;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-readonly class UsersServiceComponent implements UsersServiceComponentInterface
+final readonly class UsersServiceComponent implements UsersServiceComponentInterface
 {
     private const int TIMEOUT = 10;
     private const int STATUS_OPENED_ACCOUNTS = 2;
@@ -25,6 +26,7 @@ readonly class UsersServiceComponent implements UsersServiceComponentInterface
     ) {
     }
 
+    #[Override]
     public function getAccounts(): GetAccountsResponseDto
     {
         $url = rtrim($this->baseUrl, '/') . '/tinkoff.public.invest.api.contract.v1.UsersService/GetAccounts';

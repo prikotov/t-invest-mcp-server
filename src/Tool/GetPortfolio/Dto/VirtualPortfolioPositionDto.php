@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tool\Dto;
+namespace App\Tool\GetPortfolio\Dto;
 
-class VirtualPortfolioPositionDto
+use App\Tool\Dto\FloatValueDto;
+use App\Tool\Dto\StringValueDto;
+
+final readonly class VirtualPortfolioPositionDto
 {
     public function __construct(
         public string $ticker,

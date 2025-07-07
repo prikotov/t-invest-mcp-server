@@ -8,6 +8,7 @@ use Mcp\Client\Client;
 use Mcp\Client\ClientSession;
 use Mcp\Client\Transport\EnvironmentHelper;
 use Mcp\Client\Transport\StdioServerParameters;
+use Override;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -20,7 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:test-client',
     description: 'Протестировать MCP клиент',
 )]
-class TestClientCommand extends Command
+final class TestClientCommand extends Command
 {
     public function __construct(
         private LoggerInterface $logger,
@@ -31,6 +32,7 @@ class TestClientCommand extends Command
         parent::__construct();
     }
 
+    #[Override]
     protected function configure(): void
     {
         $this->addOption(
@@ -42,6 +44,7 @@ class TestClientCommand extends Command
         );
     }
 
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -99,7 +102,8 @@ class TestClientCommand extends Command
             case 'console':
             default:
                 $serverParams = new StdioServerParameters(
-                    command: 'bin/server', args: ['-vv'],
+                    command: 'bin/server',
+                    args: ['-vv'],
                 );
         }
 
@@ -125,16 +129,15 @@ class TestClientCommand extends Command
                     $output->writeln('  - Name: ' . $tool->name);
                     $output->writeln('    Description: ' . $tool->description);
                     $output->writeln('    Arguments:');
-                    $output->writeln('      - ' . json_encode($tool->inputSchema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                    $output->writeln('      - ' . json_encode($tool->inputSchema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
                 }
             } else {
                 $io->warning('No tools available.');
             }
 
-            $fError = false;
-            $fError |= !$this->runTool($io, $output, $session, 'get_accounts');
-            $fError |= !$this->runTool($io, $output, $session, 'get_portfolio');
-
+            $fError =
+                !$this->runTool($io, $output, $session, 'get_accounts')
+                || !$this->runTool($io, $output, $session, 'get_portfolio');
         } catch (\Exception $e) {
             $io->error([
                 'Exception' => $e::class,
@@ -161,17 +164,17 @@ class TestClientCommand extends Command
         $io->info("Calling tool: $toolName");
         $result = $session->callTool($toolName);
         if ($result->isError) {
-            $io->error($result->content[0]->text);
+            $io->error($result->content[0]->text ?? 'Unknown error.');
             return false;
         }
 
-        $decoded = json_decode($result->content[0]->text, true);
+        $decoded = json_decode($result->content[0]->text ?? '', true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             $io->warning("Invalid JSON from tool $toolName: " . $result->content[0]->text);
             return false;
         }
 
-        $output->writeln(json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        $output->writeln(json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
         return true;
     }
 }

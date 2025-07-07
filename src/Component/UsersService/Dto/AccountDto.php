@@ -6,7 +6,7 @@ namespace App\Component\UsersService\Dto;
 
 use DateTimeImmutable;
 
-class AccountDto
+final readonly class AccountDto
 {
     public function __construct(
         public string $id,

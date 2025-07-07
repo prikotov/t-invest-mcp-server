@@ -9,11 +9,12 @@ use App\Component\OperationsService\Dto\GetPortfolioResponseDto;
 use App\Component\OperationsService\Mapper\GetPortfolioRequestMapper;
 use App\Component\OperationsService\Mapper\GetPortfolioResponseMapper;
 use App\Exception\InfrastructureException;
+use Override;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-readonly class OperationsServiceComponent implements OperationsServiceComponentInterface
+final readonly class OperationsServiceComponent implements OperationsServiceComponentInterface
 {
     private const int TIMEOUT = 10;
 
@@ -27,6 +28,7 @@ readonly class OperationsServiceComponent implements OperationsServiceComponentI
     ) {
     }
 
+    #[Override]
     public function getPortfolio(GetPortfolioRequestDto $request): GetPortfolioResponseDto
     {
         $url = rtrim($this->baseUrl, '/') . '/tinkoff.public.invest.api.contract.v1.OperationsService/GetPortfolio';

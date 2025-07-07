@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Fake\Component\OperationService;
 
 use App\Component\OperationsService\Dto\GetPortfolioRequestDto;
@@ -31,7 +33,8 @@ JSON;
             'nano' => $q['nano'] ?? 0,
         ];
 
-        foreach ([
+        foreach (
+            [
             'totalAmountShares',
             'totalAmountBonds',
             'totalAmountEtf',
@@ -42,7 +45,8 @@ JSON;
             'totalAmountSp',
             'totalAmountPortfolio',
             'dailyYield',
-        ] as $field) {
+            ] as $field
+        ) {
             $data[$field] = $fillMoney($data[$field] ?? []);
         }
         $data['dailyYieldRelative'] = $fillQuotation($data['dailyYieldRelative'] ?? []);

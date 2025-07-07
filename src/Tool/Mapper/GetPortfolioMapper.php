@@ -7,18 +7,18 @@ namespace App\Tool\Mapper;
 use App\Component\OperationsService\Dto\GetPortfolioResponseDto;
 use App\Component\OperationsService\Dto\PortfolioPositionDto as ComponentPortfolioPositionDto;
 use App\Component\OperationsService\Dto\VirtualPortfolioPositionDto as ComponentVirtualPortfolioPositionDto;
+use App\Component\OperationsService\ValueObject\MoneyVo;
 use App\Component\OperationsService\ValueObject\QuotationVo;
-use App\Tool\Dto\PortfolioPositionDto;
-use App\Tool\Dto\PortfolioPositionFieldDescriptionDto;
-use App\Tool\Dto\PortfolioPositionsDto;
-use App\Tool\Dto\VirtualPortfolioPositionDto;
 use App\Tool\Dto\FloatValueDto;
-use App\Tool\Dto\GetPortfolioDto;
 use App\Tool\Dto\IntValueDto;
 use App\Tool\Dto\StringValueDto;
-use App\Component\OperationsService\ValueObject\MoneyVo;
+use App\Tool\GetPortfolio\Dto\GetPortfolioDto;
+use App\Tool\GetPortfolio\Dto\PortfolioPositionDto;
+use App\Tool\GetPortfolio\Dto\PortfolioPositionFieldDescriptionDto;
+use App\Tool\GetPortfolio\Dto\PortfolioPositionsDto;
+use App\Tool\GetPortfolio\Dto\VirtualPortfolioPositionDto;
 
-class GetPortfolioMapper
+final class GetPortfolioMapper
 {
     public function map(GetPortfolioResponseDto $dto): GetPortfolioDto
     {
@@ -34,8 +34,8 @@ class GetPortfolioMapper
             expectedYield: $this->mapQuotation('Текущая относительная доходность портфеля в процентах.', $dto->expectedYield),
             positions: new PortfolioPositionsDto(
                 fieldDescriptions: new PortfolioPositionFieldDescriptionDto(
-                    ticker: '',
-                    instrumentType: '',
+                    ticker: null,
+                    instrumentType: null,
                     quantity: 'Количество инструмента в портфеле в штуках.',
                     averagePositionPrice: 'Средневзвешенная цена позиции.',
                     expectedYield: 'Текущая рассчитанная доходность позиции.',
@@ -44,19 +44,19 @@ class GetPortfolioMapper
                     averagePositionPriceFifo: 'Средняя цена позиции по методу FIFO.',
                     blockedLots: 'Количество бумаг, заблокированных выставленными заявками.',
                     varMargin: 'Вариационная маржа.',
-                    expectedYieldFifo: 'Текущая рассчитанная доходность позиции по методу FIFO.',
+                    expectedYieldFifo: 'Текущая рассчитанная доходность позиции по методу FIFO (%).',
                     dailyYield: 'Рассчитанная доходность портфеля за день.',
-                    summary: '',
+                    summary: null,
                 ),
                 positions: array_map(
                     fn(ComponentPortfolioPositionDto $p) => $this->mapPosition($p),
                     $dto->positions
                 )
             ),
-//            virtualPositions: array_map(
-//                fn(ComponentVirtualPortfolioPositionDto $p) => $this->mapVirtualPosition($p),
-//                $dto->virtualPositions
-//            ),
+            //            virtualPositions: array_map(
+            //                fn(ComponentVirtualPortfolioPositionDto $p) => $this->mapVirtualPosition($p),
+            //                $dto->virtualPositions
+            //            ),
             positionsCount: new IntValueDto(
                 value: count($dto->positions),
                 description: 'Количество позиций в портфеле.',
@@ -77,7 +77,7 @@ class GetPortfolioMapper
     {
         return new FloatValueDto(
             value: $money->getValue(),
-            description: $description . ' (' . $money->getCurrency() . ')',
+            description: trim($description, '.') . ' (' . $money->getCurrency() . ').',
         );
     }
 
@@ -100,8 +100,8 @@ class GetPortfolioMapper
             currentNkd: $p->currentNkd?->getValue(),
             currentPrice: $p->currentPrice->getValue(),
             averagePositionPriceFifo: $p->averagePositionPriceFifo->getValue(),
-            blockedLots: $p->blockedLots?->getValue(),
-            varMargin: $p->varMargin->getValue(),
+            blockedLots: $p->blockedLots === null || $p->blockedLots->getValue() == 0 ? null : $p->blockedLots->getValue(),
+            varMargin: $p->varMargin->getValue() == 0 ? null : $p->varMargin->getValue(),
             expectedYieldFifo: $p->expectedYieldFifo->getValue(),
             dailyYield: $p->dailyYield->getValue(),
             summary: sprintf(

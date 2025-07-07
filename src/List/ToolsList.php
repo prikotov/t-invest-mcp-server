@@ -6,7 +6,7 @@ namespace App\List;
 
 use App\Enum\ToolNameEnum;
 
-class ToolsList
+final class ToolsList
 {
     /**
      * @return ToolNameEnum[]

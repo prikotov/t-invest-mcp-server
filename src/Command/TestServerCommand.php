@@ -6,6 +6,7 @@ namespace App\Command;
 
 use App\Enum\ToolNameEnum;
 use App\Factory\ToolFactory;
+use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,7 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:test-server',
     description: 'Тестовый запуск MCP сервера',
 )]
-class TestServerCommand extends Command
+final class TestServerCommand extends Command
 {
     public function __construct(
         private readonly ToolFactory $toolFactory,
@@ -24,15 +25,16 @@ class TestServerCommand extends Command
         parent::__construct();
     }
 
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
         $io->title('MCP Server Test');
 
-        $fError = false;
-        $fError |= !$this->callTool($io, ToolNameEnum::getAccounts);
-        $fError |= !$this->callTool($io, ToolNameEnum::getPortfolio);
+        $fError =
+            !$this->callTool($io, ToolNameEnum::getAccounts)
+            || !$this->callTool($io, ToolNameEnum::getPortfolio);
 
         if ($fError) {
             $io->error('One or more tools failed to execute.');
@@ -57,7 +59,8 @@ class TestServerCommand extends Command
                 'Exception' => $e::class,
                 'Message'   => $e->getMessage(),
             ]);
-            $io->writeln("<comment>Trace:</comment>\n" . $e->getTraceAsString());            return false;
+            $io->writeln("<comment>Trace:</comment>\n" . $e->getTraceAsString());
+            return false;
         }
     }
 }

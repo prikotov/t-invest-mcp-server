@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tool\Dto;
+namespace App\Tool\GetPortfolio\Dto;
 
-use App\Tool\Dto\PortfolioPositionDto;
-use App\Tool\Dto\VirtualPortfolioPositionDto;
+use App\Tool\Dto\FloatValueDto;
+use App\Tool\Dto\IntValueDto;
 
-class GetPortfolioDto
+final readonly class GetPortfolioDto
 {
     public function __construct(
         public FloatValueDto $totalAmountShares,
@@ -20,8 +20,8 @@ class GetPortfolioDto
         public FloatValueDto $totalAmountPortfolio,
         public FloatValueDto $expectedYield,
         public PortfolioPositionsDto $positions,
-//        /** @var VirtualPortfolioPositionDto[] */
-//        public array $virtualPositions,
+        //        /** @var VirtualPortfolioPositionDto[] */
+        //        public array $virtualPositions,
         public IntValueDto $positionsCount,
         public IntValueDto $virtualPositionsCount,
         public FloatValueDto $dailyYield,

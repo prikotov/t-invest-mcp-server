@@ -41,10 +41,10 @@ final readonly class MoneyVo
         $units = (string)($data['units'] ?? '');
         $nano = (string)($data['nano'] ?? '');
 
-        $value = round((int)$units + (int)$nano / 1000000000, 9);
+        $value = round((float)$units + (float)$nano / 1000000000.0, 9);
 
         return new self(
-            (string)$data['currency'],
+            (string)($data['currency'] ?? ''),
             $value,
             (int)$units,
             (int)$nano
