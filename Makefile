@@ -45,8 +45,8 @@ fix: ## Автоматическое исправление кода (phpcbf)
 ###########
 #  Тесты  #
 ###########
-.PHONY: test
-test: ## Запустить тесты
+.PHONY: test-all
+test-all: ## Запустить тесты
 	$(COMPOSE) run --rm mcp-server bin/console cache:clear
 	$(COMPOSE) run --rm mcp-server bin/console -vv app:test
 	$(COMPOSE) run --rm mcp-server bin/phpunit

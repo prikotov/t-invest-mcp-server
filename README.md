@@ -108,7 +108,7 @@ make help         # вывести справку
 make build        # собрать Docker-образ
 make push         # отправить образ в репозиторий
 make cache-clear  # очистить кэш приложения
-make test         # запустить тесты и пример клиента
+make test-all     # запустить тесты и пример клиента
 make tests        # запустить юнит тесты
 make psalm        # статический анализ
 make phpcs        # проверка стиля кода
