@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tool\Mapper;
+namespace App\Tool\GetPortfolio\Mapper;
 
 use App\Component\OperationsService\Dto\GetPortfolioResponseDto;
 use App\Component\OperationsService\ValueObject\MoneyVo;

@@ -36,6 +36,13 @@ cache-clear: ## Сбросить кэш
 	bin/console cache:clear
 
 ###########
+#  Фиксы  #
+###########
+.PHONY: fix
+fix: ## Автоматическое исправление кода (phpcbf)
+	vendor/bin/phpcbf
+
+###########
 #  Тесты  #
 ###########
 .PHONY: test

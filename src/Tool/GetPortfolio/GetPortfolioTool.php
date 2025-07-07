@@ -10,8 +10,8 @@ use App\Enum\ToolNameEnum;
 use App\Exception\InfrastructureExceptionInterface;
 use App\Exception\NotFoundExceptionInterface;
 use App\Service\TextContentSerializer\TextContentSerializerServiceInterface;
-use App\Tool\Mapper\GetPortfolioByTickerMapper;
-use App\Tool\Mapper\GetPortfolioMapper;
+use App\Tool\GetPortfolio\Mapper\GetPortfolioByTickerMapper;
+use App\Tool\GetPortfolio\Mapper\GetPortfolioMapper;
 use App\Tool\ToolInterface;
 use Mcp\Types\CallToolResult;
 use Mcp\Types\TextContent;
@@ -42,9 +42,10 @@ final readonly class GetPortfolioTool implements ToolInterface
     #[Override]
     public function getDescription(): string
     {
-        return 'Возвращает информацию о текущем портфеле пользователя в Т-Инвестициях: '
-            . 'тикер, количество, средняя и текущая цена, доходность, купонный доход (для облигаций). '
-            . 'Портфель включает акции, облигации, фонды (ETF), валюту, фьючерсы, опционы и структурные продукты. ';
+        return 'Возвращает информацию о текущем портфеле пользователя в Т-Инвестициях. '
+            . 'Поддерживает фильтрацию по тикеру. '
+            . 'Возвращаемые данные включают: тикер, количество, среднюю цену, текущую цену, доходность и купонный доход (для облигаций). '
+            . 'Типы активов: акции, облигации, фонды (ETF), валюта, фьючерсы, опционы, структурные продукты.';
     }
 
     #[Override]
@@ -53,7 +54,7 @@ final readonly class GetPortfolioTool implements ToolInterface
         $properties = ToolInputProperties::fromArray([
             self::PARAMETER_TICKER => [
                 'type' => 'string',
-                'description' => 'Тикер инструмента'
+                'description' => 'Тикер инструмента на бирже (например: SBER, GAZP, AAPL). Опциональный параметр: если не указан, возвращается весь портфель.'
             ],
         ]);
 
