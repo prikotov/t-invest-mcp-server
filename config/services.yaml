@@ -32,15 +32,23 @@ services:
             $token: '%app.t-invest.token%'
             $baseUrl: '%app.t-invest.base_url%'
 
+    App\Component\InstrumentsService\InstrumentsServiceComponent:
+        arguments:
+            $token: '%app.t-invest.token%'
+            $baseUrl: '%app.t-invest.base_url%'
+
     App\Tool\GetPortfolio\GetPortfolioTool:
         arguments:
             $accountId: '%app.t-invest.account_id%'
+
+    App\Tool\GetAssetFundamentals\GetAssetFundamentalsTool: ~
 
     App\Factory\ToolFactory:
         arguments:
             $tools:
                 get_portfolio: '@App\Tool\GetPortfolio\GetPortfolioTool'
                 get_accounts: '@App\Tool\GetAccounts\GetAccountsTool'
+                get_asset_fundamentals: '@App\Tool\GetAssetFundamentals\GetAssetFundamentalsTool'
 
     App\Command\TestClientCommand:
         arguments:

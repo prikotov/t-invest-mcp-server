@@ -3,3 +3,8 @@ services:
         autowire: true
 
     App\Component\OperationsService\OperationsServiceComponentInterface: '@App\Tests\Fake\Component\OperationService\OperationsServiceComponentFake'
+
+    App\Tests\Fake\Component\InstrumentsService\InstrumentsServiceComponentFake:
+        autowire: true
+
+    App\Component\InstrumentsService\InstrumentsServiceComponentInterface: '@App\Tests\Fake\Component\InstrumentsService\InstrumentsServiceComponentFake'

@@ -3,7 +3,7 @@
 Этот документ содержит задачи.
 
 
-## [ ] feat: Получить фундаментальные показатели компаний
+## [x] feat: Получить фундаментальные показатели компаний
 
 Описание: Реализовать метод [getAssetFundamentals](https://developer.tbank.ru/invest/services/instruments/methods#getassetfundamentals)
 Swagger: https://russianinvestments.github.io/investAPI/swagger-ui/#/InstrumentsService/InstrumentsService_GetAssetFundamentals

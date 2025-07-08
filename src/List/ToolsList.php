@@ -16,6 +16,7 @@ final class ToolsList
         return [
             ToolNameEnum::getPortfolio,
             ToolNameEnum::getAccounts,
+            ToolNameEnum::getAssetFundamentals,
         ];
     }
 }
