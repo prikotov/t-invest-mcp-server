@@ -6,6 +6,8 @@ namespace App\Component\InstrumentsService\Dto;
 
 /**
  * Фундаментальные показатели по активу.
+ *
+ * @see https://developer.tbank.ru/invest/services/instruments/methods#getassetfundamentalsresponsestatisticresponse
  */
 final readonly class AssetFundamentalDto
 {

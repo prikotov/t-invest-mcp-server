@@ -72,6 +72,6 @@ class ServerCommandTest extends KernelTestCase
         $content = $res->content[0]->text ?? '';
         $data = json_decode($content, true);
 
-        $this->assertSame('test', $data['fundamentals'][0]['assetUid']);
+        $this->assertSame('test', $data['fundamentals'][0]['assetUid']['value']);
     }
 }

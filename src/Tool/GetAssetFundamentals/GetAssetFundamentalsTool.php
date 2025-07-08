@@ -9,6 +9,7 @@ use App\Component\InstrumentsService\InstrumentsServiceComponentInterface;
 use App\Enum\ToolNameEnum;
 use App\Exception\InfrastructureExceptionInterface;
 use App\Service\TextContentSerializer\TextContentSerializerServiceInterface;
+use App\Tool\GetAssetFundamentals\Mapper\GetAssetFundamentalsMapper;
 use App\Tool\ToolInterface;
 use Mcp\Types\CallToolResult;
 use Mcp\Types\TextContent;
@@ -23,6 +24,7 @@ final readonly class GetAssetFundamentalsTool implements ToolInterface
 
     public function __construct(
         private InstrumentsServiceComponentInterface $instrumentsServiceComponent,
+        private GetAssetFundamentalsMapper $mapper,
         private TextContentSerializerServiceInterface $serializer,
     ) {
     }
@@ -74,7 +76,7 @@ final readonly class GetAssetFundamentalsTool implements ToolInterface
         }
 
         try {
-            $dto = $this->instrumentsServiceComponent->getAssetFundamentals(new GetAssetFundamentalsRequestDto($assets));
+            $componentDto = $this->instrumentsServiceComponent->getAssetFundamentals(new GetAssetFundamentalsRequestDto($assets));
         } catch (InfrastructureExceptionInterface $e) {
             return new CallToolResult(
                 content: [new TextContent(text: 'Unable to fetch data from T-Invest API: ' . $e->getMessage())],
@@ -82,6 +84,7 @@ final readonly class GetAssetFundamentalsTool implements ToolInterface
             );
         }
 
+        $dto = $this->mapper->map($componentDto);
         $text = $this->serializer->serialize($dto);
 
         return new CallToolResult(content: [new TextContent(text: $text)]);
