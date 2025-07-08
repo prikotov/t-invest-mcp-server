@@ -8,6 +8,7 @@ use App\Component\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
 use App\Component\InstrumentsService\InstrumentsServiceComponentInterface;
 use App\Enum\ToolNameEnum;
 use App\Exception\InfrastructureExceptionInterface;
+use App\Service\Instruments\InstrumentsServiceInterface;
 use App\Service\TextContentSerializer\TextContentSerializerServiceInterface;
 use App\Tool\GetAssetFundamentals\Mapper\GetAssetFundamentalsMapper;
 use App\Tool\ToolInterface;
@@ -24,6 +25,7 @@ final readonly class GetAssetFundamentalsTool implements ToolInterface
 
     public function __construct(
         private InstrumentsServiceComponentInterface $instrumentsServiceComponent,
+        private InstrumentsServiceInterface $instrumentsService,
         private GetAssetFundamentalsMapper $mapper,
         private TextContentSerializerServiceInterface $serializer,
     ) {
@@ -77,7 +79,7 @@ final readonly class GetAssetFundamentalsTool implements ToolInterface
 
         $assets = [];
         foreach ($tickers as $ticker) {
-            $uid = $this->instrumentsServiceComponent->getAssetUidByTicker($ticker);
+            $uid = $this->instrumentsService->getAssetUidByTicker($ticker);
             if ($uid !== null) {
                 $assets[] = $uid;
             }

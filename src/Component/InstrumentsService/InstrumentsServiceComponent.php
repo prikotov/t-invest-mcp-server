@@ -4,10 +4,18 @@ declare(strict_types=1);
 
 namespace App\Component\InstrumentsService;
 
+use App\Component\InstrumentsService\Dto\FindInstrumentRequestDto;
+use App\Component\InstrumentsService\Dto\FindInstrumentResponseDto;
 use App\Component\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
 use App\Component\InstrumentsService\Dto\GetAssetFundamentalsResponseDto;
+use App\Component\InstrumentsService\Dto\GetInstrumentByRequestDto;
+use App\Component\InstrumentsService\Dto\GetInstrumentByResponseDto;
+use App\Component\InstrumentsService\Mapper\FindInstrumentRequestMapper;
+use App\Component\InstrumentsService\Mapper\FindInstrumentResponseMapper;
 use App\Component\InstrumentsService\Mapper\GetAssetFundamentalsRequestMapper;
 use App\Component\InstrumentsService\Mapper\GetAssetFundamentalsResponseMapper;
+use App\Component\InstrumentsService\Mapper\GetInstrumentByRequestMapper;
+use App\Component\InstrumentsService\Mapper\GetInstrumentByResponseMapper;
 use App\Exception\InfrastructureException;
 use Override;
 use Psr\Log\LoggerInterface;
@@ -23,54 +31,21 @@ final readonly class InstrumentsServiceComponent implements InstrumentsServiceCo
         private string $baseUrl,
         private HttpClientInterface $httpClient,
         private LoggerInterface $logger,
-        private GetAssetFundamentalsRequestMapper $requestMapper,
-        private GetAssetFundamentalsResponseMapper $responseMapper,
+        private GetAssetFundamentalsRequestMapper $assetRequestMapper,
+        private GetAssetFundamentalsResponseMapper $assetResponseMapper,
+        private FindInstrumentRequestMapper $findRequestMapper,
+        private FindInstrumentResponseMapper $findResponseMapper,
+        private GetInstrumentByRequestMapper $getRequestMapper,
+        private GetInstrumentByResponseMapper $getResponseMapper,
     ) {
     }
 
     #[Override]
-    public function getAssetUidByTicker(string $ticker): ?string
-    {
-        $uid = $this->findInstrumentUid($ticker);
-        if ($uid === null) {
-            return null;
-        }
-
-        $url = rtrim($this->baseUrl, '/') . '/tinkoff.public.invest.api.contract.v1.InstrumentsService/GetInstrumentBy';
-
-        $this->logger->info('Fetching instrument by uid', ['uid' => $uid]);
-
-        try {
-            $response = $this->httpClient->request(
-                'POST',
-                $url,
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-type' => 'application/json',
-                        'Authorization' => 'Bearer ' . $this->token,
-                    ],
-                    'timeout' => self::TIMEOUT,
-                    'json' => [
-                        'idType' => 'INSTRUMENT_ID_TYPE_UID',
-                        'id' => $uid,
-                    ],
-                ],
-            );
-            $data = $response->toArray();
-        } catch (ExceptionInterface $e) {
-            $this->logger->error('GetInstrumentBy request failed', ['error' => $e->getMessage()]);
-            return null;
-        }
-
-        return $data['instrument']['assetUid'] ?? null;
-    }
-
-    private function findInstrumentUid(string $query): ?string
+    public function findInstrument(FindInstrumentRequestDto $request): FindInstrumentResponseDto
     {
         $url = rtrim($this->baseUrl, '/') . '/tinkoff.public.invest.api.contract.v1.InstrumentsService/FindInstrument';
 
-        $this->logger->info('Searching instrument', ['query' => $query]);
+        $this->logger->info('Searching instrument', ['query' => $request->query]);
 
         try {
             $response = $this->httpClient->request(
@@ -83,25 +58,46 @@ final readonly class InstrumentsServiceComponent implements InstrumentsServiceCo
                         'Authorization' => 'Bearer ' . $this->token,
                     ],
                     'timeout' => self::TIMEOUT,
-                    'json' => [
-                        'query' => $query,
-                    ],
+                    'json' => $this->findRequestMapper->map($request),
                 ],
             );
             $data = $response->toArray();
         } catch (ExceptionInterface $e) {
             $this->logger->error('FindInstrument request failed', ['error' => $e->getMessage()]);
-            return null;
+            return new FindInstrumentResponseDto([]);
         }
 
-        foreach ($data['instruments'] ?? [] as $instrument) {
-            if (($instrument['ticker'] ?? '') === $query) {
-                return $instrument['uid'] ?? null;
-            }
+        return $this->findResponseMapper->map($data);
+    }
+
+    #[Override]
+    public function getInstrumentBy(GetInstrumentByRequestDto $request): GetInstrumentByResponseDto
+    {
+        $url = rtrim($this->baseUrl, '/') . '/tinkoff.public.invest.api.contract.v1.InstrumentsService/GetInstrumentBy';
+
+        $this->logger->info('Fetching instrument by id', ['id' => $request->id]);
+
+        try {
+            $response = $this->httpClient->request(
+                'POST',
+                $url,
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Content-type' => 'application/json',
+                        'Authorization' => 'Bearer ' . $this->token,
+                    ],
+                    'timeout' => self::TIMEOUT,
+                    'json' => $this->getRequestMapper->map($request),
+                ],
+            );
+            $data = $response->toArray();
+        } catch (ExceptionInterface $e) {
+            $this->logger->error('GetInstrumentBy request failed', ['error' => $e->getMessage()]);
+            return new GetInstrumentByResponseDto(null);
         }
 
-        $first = $data['instruments'][0]['uid'] ?? null;
-        return $first;
+        return $this->getResponseMapper->map($data);
     }
 
     #[Override]
@@ -122,7 +118,7 @@ final readonly class InstrumentsServiceComponent implements InstrumentsServiceCo
                         'Authorization' => 'Bearer ' . $this->token,
                     ],
                     'timeout' => self::TIMEOUT,
-                    'json' => $this->requestMapper->map($request),
+                    'json' => $this->assetRequestMapper->map($request),
                 ],
             );
             $responseData = $response->toArray();
@@ -136,6 +132,6 @@ final readonly class InstrumentsServiceComponent implements InstrumentsServiceCo
 
         $this->logger->info('Asset fundamentals data received');
 
-        return $this->responseMapper->map($responseData);
+        return $this->assetResponseMapper->map($responseData);
     }
 }

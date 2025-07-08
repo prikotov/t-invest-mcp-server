@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace App\Tests\Fake\Component\InstrumentsService;
 
 use App\Component\InstrumentsService\Dto\AssetFundamentalDto;
+use App\Component\InstrumentsService\Dto\FindInstrumentRequestDto;
+use App\Component\InstrumentsService\Dto\FindInstrumentResponseDto;
 use App\Component\InstrumentsService\Dto\GetAssetFundamentalsRequestDto;
 use App\Component\InstrumentsService\Dto\GetAssetFundamentalsResponseDto;
+use App\Component\InstrumentsService\Dto\GetInstrumentByRequestDto;
+use App\Component\InstrumentsService\Dto\GetInstrumentByResponseDto;
+use App\Component\InstrumentsService\Dto\InstrumentShortDto;
 use App\Component\InstrumentsService\InstrumentsServiceComponentInterface;
 
 class InstrumentsServiceComponentFake implements InstrumentsServiceComponentInterface
@@ -76,8 +81,14 @@ class InstrumentsServiceComponentFake implements InstrumentsServiceComponentInte
         return new GetAssetFundamentalsResponseDto([$dto]);
     }
 
-    public function getAssetUidByTicker(string $ticker): ?string
+    public function findInstrument(FindInstrumentRequestDto $request): FindInstrumentResponseDto
     {
-        return $ticker . '-uid';
+        $instrument = new InstrumentShortDto($request->query . '-uid', $request->query);
+        return new FindInstrumentResponseDto([$instrument]);
+    }
+
+    public function getInstrumentBy(GetInstrumentByRequestDto $request): GetInstrumentByResponseDto
+    {
+        return new GetInstrumentByResponseDto($request->id);
     }
 }
