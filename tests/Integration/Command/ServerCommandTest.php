@@ -47,6 +47,7 @@ class ServerCommandTest extends KernelTestCase
         $toolsAsJson = json_encode($toolsResult, JSON_UNESCAPED_UNICODE);
 
         $this->assertStringContainsString('get_portfolio', $toolsAsJson);
+        $this->assertStringContainsString('get_asset_fundamentals', $toolsAsJson);
     }
 
     public function testGetSecuritySpecification(): void
@@ -59,5 +60,18 @@ class ServerCommandTest extends KernelTestCase
         $data = json_decode($content, true);
 
         $this->assertSame(0, $data['totalAmountShares']['value']);
+    }
+
+    public function testCallGetAssetFundamentals(): void
+    {
+        $session = $this->startSession();
+
+        $res = $session->callTool('get_asset_fundamentals', ['assets' => ['test']]);
+        $this->assertFalse($res->isError, $res->content[0]->text ?? '');
+
+        $content = $res->content[0]->text ?? '';
+        $data = json_decode($content, true);
+
+        $this->assertSame('test', $data['fundamentals'][0]['assetUid']);
     }
 }
