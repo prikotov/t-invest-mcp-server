@@ -29,6 +29,82 @@ final readonly class InstrumentsServiceComponent implements InstrumentsServiceCo
     }
 
     #[Override]
+    public function getAssetUidByTicker(string $ticker): ?string
+    {
+        $uid = $this->findInstrumentUid($ticker);
+        if ($uid === null) {
+            return null;
+        }
+
+        $url = rtrim($this->baseUrl, '/') . '/tinkoff.public.invest.api.contract.v1.InstrumentsService/GetInstrumentBy';
+
+        $this->logger->info('Fetching instrument by uid', ['uid' => $uid]);
+
+        try {
+            $response = $this->httpClient->request(
+                'POST',
+                $url,
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Content-type' => 'application/json',
+                        'Authorization' => 'Bearer ' . $this->token,
+                    ],
+                    'timeout' => self::TIMEOUT,
+                    'json' => [
+                        'idType' => 'INSTRUMENT_ID_TYPE_UID',
+                        'id' => $uid,
+                    ],
+                ],
+            );
+            $data = $response->toArray();
+        } catch (ExceptionInterface $e) {
+            $this->logger->error('GetInstrumentBy request failed', ['error' => $e->getMessage()]);
+            return null;
+        }
+
+        return $data['instrument']['assetUid'] ?? null;
+    }
+
+    private function findInstrumentUid(string $query): ?string
+    {
+        $url = rtrim($this->baseUrl, '/') . '/tinkoff.public.invest.api.contract.v1.InstrumentsService/FindInstrument';
+
+        $this->logger->info('Searching instrument', ['query' => $query]);
+
+        try {
+            $response = $this->httpClient->request(
+                'POST',
+                $url,
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Content-type' => 'application/json',
+                        'Authorization' => 'Bearer ' . $this->token,
+                    ],
+                    'timeout' => self::TIMEOUT,
+                    'json' => [
+                        'query' => $query,
+                    ],
+                ],
+            );
+            $data = $response->toArray();
+        } catch (ExceptionInterface $e) {
+            $this->logger->error('FindInstrument request failed', ['error' => $e->getMessage()]);
+            return null;
+        }
+
+        foreach ($data['instruments'] ?? [] as $instrument) {
+            if (($instrument['ticker'] ?? '') === $query) {
+                return $instrument['uid'] ?? null;
+            }
+        }
+
+        $first = $data['instruments'][0]['uid'] ?? null;
+        return $first;
+    }
+
+    #[Override]
     public function getAssetFundamentals(GetAssetFundamentalsRequestDto $request): GetAssetFundamentalsResponseDto
     {
         $url = rtrim($this->baseUrl, '/') . '/tinkoff.public.invest.api.contract.v1.InstrumentsService/GetAssetFundamentals';

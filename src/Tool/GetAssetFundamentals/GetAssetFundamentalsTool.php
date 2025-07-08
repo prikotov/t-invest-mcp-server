@@ -20,7 +20,7 @@ use Override;
 
 final readonly class GetAssetFundamentalsTool implements ToolInterface
 {
-    private const string PARAMETER_ASSETS = 'assets';
+    private const string PARAMETER_TICKERS = 'tickers';
 
     public function __construct(
         private InstrumentsServiceComponentInterface $instrumentsServiceComponent,
@@ -38,17 +38,17 @@ final readonly class GetAssetFundamentalsTool implements ToolInterface
     #[Override]
     public function getDescription(): string
     {
-        return 'Возвращает фундаментальные показатели компаний по заданным assetUid';
+        return 'Возвращает фундаментальные показатели компаний по заданным тикерам';
     }
 
     #[Override]
     public function getTool(): Tool
     {
         $properties = ToolInputProperties::fromArray([
-            self::PARAMETER_ASSETS => [
+            self::PARAMETER_TICKERS => [
                 'type' => 'array',
                 'items' => ['type' => 'string'],
-                'description' => 'Массив идентификаторов активов (uid), не более 100 шт.',
+                'description' => 'Массив тикеров инструментов, не более 100 шт.',
             ],
         ]);
 
@@ -67,12 +67,20 @@ final readonly class GetAssetFundamentalsTool implements ToolInterface
     public function __invoke(mixed ...$args): CallToolResult
     {
         $params = $args[0] ?? [];
-        $assets = $params[self::PARAMETER_ASSETS] ?? [];
-        if (is_string($assets)) {
-            $assets = array_map('trim', explode(',', $assets));
+        $tickers = $params[self::PARAMETER_TICKERS] ?? [];
+        if (is_string($tickers)) {
+            $tickers = array_map('trim', explode(',', $tickers));
         }
-        if (!is_array($assets)) {
-            $assets = [];
+        if (!is_array($tickers)) {
+            $tickers = [];
+        }
+
+        $assets = [];
+        foreach ($tickers as $ticker) {
+            $uid = $this->instrumentsServiceComponent->getAssetUidByTicker($ticker);
+            if ($uid !== null) {
+                $assets[] = $uid;
+            }
         }
 
         try {

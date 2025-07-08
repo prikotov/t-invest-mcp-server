@@ -15,6 +15,7 @@ use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\Exception\TimeoutException;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface as HttpResponse;
 
 class InstrumentsServiceComponentTest extends TestCase
 {
@@ -71,5 +72,27 @@ class InstrumentsServiceComponentTest extends TestCase
             $this->assertSame('GetAssetFundamentals request failed: API error', $e->getMessage());
             $this->assertSame($exception, $e->getPrevious());
         }
+    }
+
+    public function testGetAssetUidByTickerSuccess(): void
+    {
+        $findResponse = $this->createMock(HttpResponse::class);
+        $findResponse->method('toArray')->willReturn([
+            'instruments' => [
+                ['uid' => 'u1', 'ticker' => 'TCKR'],
+            ],
+        ]);
+
+        $getResponse = $this->createMock(HttpResponse::class);
+        $getResponse->method('toArray')->willReturn([
+            'instrument' => ['assetUid' => 'asset-1'],
+        ]);
+
+        $this->httpClient->expects($this->exactly(2))
+            ->method('request')
+            ->willReturnOnConsecutiveCalls($findResponse, $getResponse);
+
+        $result = $this->component->getAssetUidByTicker('TCKR');
+        $this->assertSame('asset-1', $result);
     }
 }

@@ -75,4 +75,9 @@ class InstrumentsServiceComponentFake implements InstrumentsServiceComponentInte
 
         return new GetAssetFundamentalsResponseDto([$dto]);
     }
+
+    public function getAssetUidByTicker(string $ticker): ?string
+    {
+        return $ticker . '-uid';
+    }
 }

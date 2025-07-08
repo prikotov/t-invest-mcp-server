@@ -66,12 +66,12 @@ class ServerCommandTest extends KernelTestCase
     {
         $session = $this->startSession();
 
-        $res = $session->callTool('get_asset_fundamentals', ['assets' => ['test']]);
+        $res = $session->callTool('get_asset_fundamentals', ['tickers' => ['test']]);
         $this->assertFalse($res->isError, $res->content[0]->text ?? '');
 
         $content = $res->content[0]->text ?? '';
         $data = json_decode($content, true);
 
-        $this->assertSame('test', $data['fundamentals'][0]['assetUid']['value']);
+        $this->assertSame('test-uid', $data['fundamentals'][0]['assetUid']['value']);
     }
 }
